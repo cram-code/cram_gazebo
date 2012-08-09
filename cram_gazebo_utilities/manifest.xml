@@ -1,0 +1,14 @@
+<package>
+  <description brief="cram_gazebo_utilities">
+
+     cram_gazebo_utilities
+
+  </description>
+  <author>Jan Winkler</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/cram_gazebo_utilities</url>
+
+</package>
+
+
