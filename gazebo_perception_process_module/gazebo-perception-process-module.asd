@@ -49,7 +49,8 @@
                cram-plan-failures
 	       gazebo_msgs-msg
 	       gazebo_msgs-srv
-               cl-semantic-map-utils)
+               cl-semantic-map-utils
+               cram-plan-library)
   :components
   ((:module "src"
             :components

@@ -11,6 +11,7 @@
   
   <depend package="cram_roslisp_common" />
   <depend package="cram_process_modules" />
+  <depend package="cram_plan_library" />
   <depend package="vision_msgs" />
   <depend package="vision_srvs" />
   <depend package="cram_reasoning" />
