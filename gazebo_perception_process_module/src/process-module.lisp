@@ -117,12 +117,12 @@ gazebo. The pose is given in the `map' frame."
 
 (defun find-object (designator)
   "Finds objects with (optional) name `object-name' and type `type'
-  and returns a list of elements of the form \(name pose\)."
+and returns a list of elements of the form \(name pose\)."
   (let ((object-name (when (slot-value designator 'desig:data)
                        (desig:object-identifier (desig:reference designator))))
         (type (or (desig:desig-prop-value designator 'desig-props:type)
                   '?_)))
-    (list object-name (get-object-pose object-name))))
+    (list object-name (get-model-pose object-name))))
 
 (defun find-with-bound-designator (designator)
   (flet ((make-designator (object pose)
