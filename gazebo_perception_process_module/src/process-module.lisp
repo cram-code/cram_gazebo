@@ -75,7 +75,7 @@ about the current state of all models in the simulated world."
                designator)
              (if newest-valid-designator
                  (find-with-bound-designator newest-valid-designator)
-               (find-with-new-designator input)))
+                 (find-with-new-designator input)))
      (cpl:fail 'cram-plan-failures:object-not-found
                :object-desig input))))
 
