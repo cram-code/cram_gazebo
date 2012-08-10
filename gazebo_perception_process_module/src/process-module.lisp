@@ -63,10 +63,14 @@ gazebo. The pose is given in the `map' frame."
              (elt pose-sequence model-name-index)))))))))
 
 (defun model-state-callback (msg)
+  "This is the callback for the gazebo topic subscriber subscribed on
+`/gazebo/model_states'. It takes message `msg' with the format
+`gazebo_msgs/ModelStates' as a parameter."
   (setf (cram-language:value *model-state-msg*) msg)
   (cram-language:pulse *model-state-msg*))
 
 (def-process-module gazebo-perception-process-module (desig)
+  "Definition of the gazebo-perception-process-module."
   (let ((newest-valid-designator (desig:newest-valid-designator input)))
     (or
      (mapcar (lambda (designator)
