@@ -69,7 +69,7 @@ gazebo. The pose is given in the `map' frame."
 
 (def-process-module gazebo-perception-process-module (desig)
   "Definition of the gazebo-perception-process-module."
-  (let ((newest-valid-designator (desig:newest-valid-designator input)))
+  (let ((newest-valid-designator (desig:newest-valid-designator desig)))
     (or
      (mapcar (lambda (designator)
                (cram-plan-knowledge:on-event
@@ -79,9 +79,9 @@ gazebo. The pose is given in the `map' frame."
                designator)
              (if newest-valid-designator
                  (find-with-bound-designator newest-valid-designator)
-                 (find-with-new-designator input)))
+                 (find-with-new-designator desig)))
      (cpl:fail 'cram-plan-failures:object-not-found
-               :object-desig input))))
+               :object-desig desig))))
 
 (defclass projection-object-designator (desig:object-designator)
   ())
