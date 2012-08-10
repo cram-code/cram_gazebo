@@ -116,13 +116,16 @@ gazebo. The pose is given in the `map' frame."
     designator))
 
 (defun find-object-with-id (id &key name type)
+  (find-object (make-named-object-designator id :name name :type type)))
+
+(defun make-named-object-designator (id &key name type)
   (let ((obj-desig (gazebo-perception-process-module::make-object-designator
                     (make-instance 'gazebo-perception-pm::perceived-object
-                                   :object-identifier id
-                                   :pose nil)
+                      :object-identifier id
+                      :pose nil)
                     :name name
                     :type type)))
-    (find-object obj-desig)))
+    obj-desig))
 
 (defun find-object (designator)
   "Finds objects with (optional) name `object-name' and type `type'
