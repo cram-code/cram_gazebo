@@ -36,6 +36,7 @@
   #:cram-roslisp-common
   #:cram-reasoning
   #:cram-process-modules
+  #:cram-plan-library
   #:crs
   #:cut
   #:desig
