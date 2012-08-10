@@ -44,4 +44,6 @@
   #:roslisp
   #:cram-plan-failures
   #:semantic-map-cache)
+ (:export
+  #:gazebo-perception-process-module)
  (:shadowing-import-from :common-lisp))
