@@ -42,6 +42,8 @@ about the current state of all models in the simulated world."
          #'model-state-callback)))
 
 (defun get-model-pose (name)
+  "Return the current pose of a model with the name `name' spawned in
+gazebo. The pose is given in the `map' frame."
   (cram-language:wait-for (cram-language:pulsed *model-state-msg*))
   (let ((model-state-msg (cram-language:value *model-state-msg*)))
     (when model-state-msg
