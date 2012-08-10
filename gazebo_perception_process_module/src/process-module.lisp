@@ -27,6 +27,7 @@
 
 (in-package :gazebo-perception-process-module)
 
+(defvar *gazebo-modelstates-subscriber* nil)
 (defvar *model-state-msg* (cram-language:make-fluent :name :model-state-msg))
 
 (defun init-gazebo-perception-process-module ()
