@@ -46,19 +46,19 @@ gazebo. The pose is given in the `map' frame."
   (let ((model-state-msg (cram-language:value *model-state-msg*)))
     (when model-state-msg
       (with-fields
-       ((name-sequence name)
-        (pose-sequence pose)
-        (twist-sequence twist))
-       model-state-msg
-       (let ((model-name-index (position name
-                                         name-sequence
-                                         :test #'equal)))
-         (when model-name-index
-           (tf:pose->pose-stamped
-            "map"
-            (roslisp:ros-time)
-            (tf:msg->pose
-             (elt pose-sequence model-name-index)))))))))
+          ((name-sequence name)
+           (pose-sequence pose)
+           (twist-sequence twist))
+          model-state-msg
+        (let ((model-name-index (position name
+                                          name-sequence
+                                          :test #'equal)))
+          (when model-name-index
+            (tf:pose->pose-stamped
+             "map"
+             (roslisp:ros-time)
+             (tf:msg->pose
+              (elt pose-sequence model-name-index)))))))))
 
 (defun model-state-callback (msg)
   "This is the callback for the gazebo topic subscriber subscribed on
@@ -127,9 +127,10 @@ gazebo. The pose is given in the `map' frame."
 (defun find-with-bound-designator (designator)
   (flet ((make-designator (object pose)
            (make-object-designator
-            (make-instance 'perceived-object
-              :object-identifier object
-              :pose pose)
+            (make-instance
+             'perceived-object
+             :object-identifier object
+             :pose pose)
             :name object
             :parent designator)))
     (cut:force-ll
@@ -140,9 +141,10 @@ gazebo. The pose is given in the `map' frame."
   (desig:with-desig-props (desig-props:type) designator
     (flet ((make-designator (object pose)
              (make-object-designator
-              (make-instance 'perceived-object
-                :object-identifier object
-                :pose pose)
+              (make-instance
+               'perceived-object
+               :object-identifier object
+               :pose pose)
               :type desig-props:type
               :name object)))
       (when desig-props:type
