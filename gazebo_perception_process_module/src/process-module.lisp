@@ -110,7 +110,7 @@ gazebo. The pose is given in the `map' frame."
                             ,@(when name `((desig-props:name ,name))))
                         (when parent (desig:properties parent)))
                        parent)
-                      'projection-object-designator)))
+                      'object-designator)))
     (setf (slot-value perceived-object 'designator) designator)
     (setf (slot-value designator 'desig:data) perceived-object)
     (setf (slot-value designator 'desig:valid) t)
@@ -132,10 +132,8 @@ gazebo. The pose is given in the `map' frame."
   "Finds objects with (optional) name `object-name' and type `type'
 and returns a list of elements of the form \(name pose\)."
   (let ((object-name (when (slot-value designator 'desig:data)
-                       (desig:object-identifier (desig:reference designator))))
-        (type (or (desig:desig-prop-value designator 'desig-props:type)
-                  '?_)))
-    (list object-name (get-model-pose object-name))))
+                       (desig:object-identifier (desig:reference designator)))))
+    (list (list object-name (get-model-pose object-name)))))
 
 (defun find-with-bound-designator (designator)
   (flet ((make-designator (object pose)
