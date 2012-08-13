@@ -27,3 +27,11 @@
 
 (in-package :cram-gazebo-utilities)
 
+(defun set-model-state (model-name new-pose)
+  (call-service "gazebo/set_model_state"
+                'gazebo_msgs-srv:setmodelstate
+                :model_state
+                (make-msg "gazebo_msgs/ModelState"
+                          :model_name model-name
+                          :pose (tf:pose->msg new-pose)
+                          :reference_frame "map")))
