@@ -47,4 +47,5 @@
   #:semantic-map-cache)
  (:export
   #:gazebo-perception-process-module)
- (:shadowing-import-from :common-lisp))
+ (:shadowing-import-from :common-lisp)
+ (:desig-props #:grasp))
