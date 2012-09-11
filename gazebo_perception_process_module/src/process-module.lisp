@@ -48,8 +48,8 @@ gazebo. The pose is given in the `map' frame."
     (when model-state-msg
       (with-fields
           ((name-sequence name)
-           (pose-sequence pose)
-           (twist-sequence twist))
+           (pose-sequence pose))
+;           (twist-sequence twist))
           model-state-msg
         (let ((model-name-index (position name
                                           name-sequence
@@ -78,8 +78,8 @@ gazebo. The pose is given in the `map' frame."
                                :perception-source :projection
                                :object-designator designator))
                designator)
-             (if newest-valid-designator
-                 (find-with-bound-designator newest-valid-designator)
+             (if newest-effective
+                 (find-with-bound-designator newest-effective)
                  (find-with-new-designator desig)))
      (cpl:fail 'cram-plan-failures:object-not-found
                :object-desig desig))))
@@ -98,27 +98,8 @@ gazebo. The pose is given in the `map' frame."
   (cl-transforms:v-dist (cl-transforms:origin (desig:designator-pose designator-1))
                         (cl-transforms:origin (desig:designator-pose designator-2))))
 
-;; (defun make-object-designator (perceived-object &key parent type name)
-;;   (let* ((pose (desig:object-pose perceived-object))
-;;          (designator (change-class
-;;                       (desig:make-designator
-;;                        'desig-props:object
-;;                        (desig:update-designator-properties
-;;                         `(,@(when type `((desig-props:type ,type)))
-;;                             (desig-props:at ,(desig:make-designator
-;;                                               'desig:location `((desig-props:pose ,pose))))
-;;                             ,@(when name `((desig-props:name ,name))))
-;;                         (when parent (desig:properties parent)))
-;;                        parent)
-;;                       'object-designator)))
-;;     (setf (slot-value perceived-object 'designator) designator)
-;;     (setf (slot-value designator 'desig:data) perceived-object)
-;;     (setf (slot-value designator 'desig:valid) t)
-;;     designator))
-
 (defun make-object-designator (perceived-object &key parent type name)
   (assert parent)
-  (format t "Name is: ~a~%" name)
   (let ((pose (desig:object-pose perceived-object)))
     (desig:make-effective-designator
      parent
@@ -128,9 +109,7 @@ gazebo. The pose is given in the `map' frame."
                                           'desig:location `((desig-props:pose ,pose))))
                         ,@(when name `((desig-props:name ,name))))
                       (when parent (desig:properties parent)))
-     :data-object perceived-object)
-    'projection-object-designator))
-;    'desig:object-designator))
+     :data-object perceived-object)))
 
 (defun find-object-with-id (id &key name type)
   (find-object (make-named-object-designator id :name name :type type)))
