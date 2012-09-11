@@ -25,8 +25,6 @@
 ;;; ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 ;;; POSSIBILITY OF SUCH DAMAGE.
 
-(in-package :cl-user)
-
 (desig-props:def-desig-package
  gazebo-perception-process-module
  (:documentation "Gazebo perception process module")
@@ -37,6 +35,7 @@
   #:cram-reasoning
   #:cram-process-modules
   #:cram-plan-library
+  #:cram-designators
   #:crs
   #:cut
   #:desig
@@ -47,5 +46,9 @@
   #:semantic-map-cache)
  (:export
   #:gazebo-perception-process-module)
+ (:import-from #:cram-plan-knowledge
+	       matching-process-module available-process-module)
  (:shadowing-import-from :common-lisp)
- (:desig-props #:grasp))
+ (:desig-properties #:grasp #:cluster #:type #:object #:on #:to #:perceive
+	       #:obj #:part-of #:at #:name #:pose #:handle #:lid #:small-bowl #:pot
+	       #:big-plate))
