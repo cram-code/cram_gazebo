@@ -30,6 +30,17 @@
 
 (def-fact-group perception-action-designator (action-desig)
 
-  (<- (action-desig ?designator ?object)
+  (<- (action-desig ?desig ?object)
     (desig-prop ?desig (to perceive))
     (desig-prop ?desig (obj ?object))))
+
+
+(def-fact-group process-module (matching-process-module available-process-module)
+
+  (<- (matching-process-module ?designator gazebo-perception-process-module)
+    (desig-prop ?designator (to perceive))
+    (desig-prop ?designator (obj ?object))
+    (obj-desig? ?object))
+
+  (<- (available-process-module gazebo-perception-process-module)
+    (symbol-value cram-projection:*projection-environment* nil)))
