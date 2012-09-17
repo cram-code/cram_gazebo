@@ -109,7 +109,7 @@ gazebo. The pose is given in the `map' frame."
 (def-process-module gazebo-perception-process-module (input)
   (assert (typep input 'action-designator))
   (let ((object-designator (reference input)))
-    (ros-info (perception process-module) "Searching for object ~a" object-designator)
+    (ros-info (gazebo-perception-pm process-module) "Searching for object ~a" object-designator)
     (let* ((newest-effective (newest-effective-designator object-designator))
            (result
              (some (lambda (role)
@@ -122,7 +122,7 @@ gazebo. The pose is given in the `map' frame."
                    *known-roles*)))
       (unless result
         (cram-language:fail 'object-not-found :object-desig object-designator))
-      (ros-info (perception process-module) "Found objects: ~a" result)
+      (ros-info (gazebo-perception-pm process-module) "Found objects: ~a" result)
       result)))
 
 (defun make-handled-object-designator (&key object-type
@@ -222,7 +222,6 @@ and returns a list of elements of the form \(name pose\)."
 ;;      (cut:lazy-mapcar
 ;;       (alexandria:curry #'apply #'make-designator) (find-object designator)))))
 (defun find-with-parent-desig (desig)
-  (format t "with-parent: ~a~%" desig)
   "Takes the perceived-object of the parent designator as a bias for
    perception."
   (let* ((parent-desig (current-desig desig))
@@ -231,7 +230,6 @@ and returns a list of elements of the form \(name pose\)."
      (when perceived-object
        (let ((perceived-objects
                (execute-object-search-functions parent-desig :perceived-object perceived-object)))
-         (format t "with parent desig: ~a~%" perceived-objects)
          (when perceived-objects
            ;; NOTE(winkler): Removed the (car ...) here due to the
            ;; fact that find-with-new-desig returns a list. This
@@ -246,12 +244,10 @@ and returns a list of elements of the form \(name pose\)."
      (find-with-new-desig desig))))
 
 (defun find-with-new-desig (desig)
-  (format t "with-new~%")
   "Takes a parent-less designator. A search is performed a new
    designator is generated for every object that has been found."
   (let ((perceived-objects (execute-object-search-functions desig :role *perception-role*)))
     ;; Sort perceived objects according to probability
-    (format t "with new desig: ~a~%" perceived-objects)
     (mapcar (lambda (perceived-object)
               (emit-perception-event
                (perceived-object->designator desig perceived-object)))
