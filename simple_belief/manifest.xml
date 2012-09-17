@@ -1,0 +1,15 @@
+<package>
+  <description brief="simple_belief">
+
+     simple_belief
+
+  </description>
+  <author>Jan Winkler</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/simple_belief</url>
+  <depend package="roslisp"/>
+
+</package>
+
+
