@@ -56,5 +56,5 @@
   ((:module "src"
             :components
             ((:file "package")
-             (:file "designator")
+             (:file "designator" :depends-on ("package"))
              (:file "process-module" :depends-on ("package" "designator"))))))
