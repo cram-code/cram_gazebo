@@ -62,7 +62,6 @@ gazebo. The pose is given in the `map' frame."
         (let ((model-name-index (position name name-sequence :test test)))
           (when model-name-index
             (tf:pose->pose-stamped
-             "map"
-             (roslisp:ros-time)
+             "map" 0.0
              (tf:msg->pose
               (elt pose-sequence model-name-index)))))))))

@@ -91,11 +91,9 @@ purposes."
 instance of PERCEIVED-OBJECT."
   (let ((model-pose (get-model-pose name :test #'object-names-equal)))
     (when model-pose
-      (let ((model-pose-in-fixed-frame
-              (tf:transform-pose *tf* :pose model-pose :target-frame *fixed-frame*)))
-        (make-instance 'perceived-object
-          :pose (tf:copy-pose-stamped model-pose-in-fixed-frame :stamp 0.0)
-          :object-identifier name)))))
+      (make-instance 'perceived-object
+        :pose model-pose
+        :object-identifier name))))
 
 (defmethod make-new-desig-description ((old-desig object-designator)
                                        (perceived-object perceived-object))
