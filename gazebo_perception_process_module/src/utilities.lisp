@@ -1,4 +1,4 @@
-;;; Copyright (c) 2012, Jan Winkler <winkler@cs.uni-bremen.de>
+;;; Copyright (c) 2012, Lorenz Moesenlechner <moesenle@in.tum.de>
 ;;; All rights reserved.
 ;;; 
 ;;; Redistribution and use in source and binary forms, with or without
@@ -9,10 +9,10 @@
 ;;;     * Redistributions in binary form must reproduce the above copyright
 ;;;       notice, this list of conditions and the following disclaimer in the
 ;;;       documentation and/or other materials provided with the distribution.
-;;;     * Neither the name of Institute for Artificial Intelligence/
-;;;       Universitaet Bremen nor the names of its
-;;;       contributors may be used to endorse or promote products derived from
-;;;       this software without specific prior written permission.
+;;;     * Neither the name of the Intelligent Autonomous Systems Group/
+;;;       Technische Universitaet Muenchen nor the names of its contributors 
+;;;       may be used to endorse or promote products derived from this software 
+;;;       without specific prior written permission.
 ;;; 
 ;;; THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 ;;; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -26,27 +26,16 @@
 ;;; ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 ;;; POSSIBILITY OF SUCH DAMAGE.
 
-(defsystem gazebo-perception-process-module
-  :author "Jan Winkler <winkler@cs.uni-bremen.de>"
-  :license "BSD"
-  :description "Gazebo perception process module"
+(in-package :gazebo-perception-pm)
 
-  :depends-on (cram-roslisp-common
-               cram-language
-               cram-reasoning
-               process-modules
-               cram-utilities
-               cram-plan-knowledge
-               designators
-               designators-ros
-               cram-plan-failures
-               gazebo_msgs-msg
-               gazebo_msgs-srv)
-  :components
-  ((:module "src"
-            :components
-            ((:file "package")
-             (:file "utilities" :depends-on ("package"))
-             (:file "designator" :depends-on ("package" "utilities"))
-             (:file "ros" :depends-on ("package"))
-             (:file "process-module" :depends-on ("package" "utilities" "ros"))))))
+(defun object-names-equal (name-1 name-2)
+  "In designators, we want to support symbols as names, too. It first
+  converts all names that are symbols to strings and then compares
+  them, ignoring case."
+  (let ((name-1 (etypecase name-1
+                  (symbol (symbol-name name-1))
+                  (string name-1)))
+        (name-2 (etypecase name-2
+                  (symbol (symbol-name name-2))
+                  (string name-2))))
+    (string-equal name-1 name-2)))

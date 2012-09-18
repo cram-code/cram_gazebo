@@ -74,18 +74,6 @@ purposes."
                                   (type handle)))))
           handles))
 
-(defun object-names-equal (name-1 name-2)
-  "In designators, we want to support symbols as names, too. It first
-  converts all names that are symbols to strings and then compares
-  them, ignoring case."
-  (let ((name-1 (etypecase name-1
-                  (symbol (symbol-name name-1))
-                  (string name-1)))
-        (name-2 (etypecase name-2
-                  (symbol (symbol-name name-2))
-                  (string name-2))))
-    (string-equal name-1 name-2)))
-
 (defun find-object (name)
   "Finds the object named `name' in the gazebo world and returns an
 instance of PERCEIVED-OBJECT."
