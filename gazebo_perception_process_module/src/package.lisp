@@ -44,4 +44,4 @@
                 matching-process-module available-process-module)
   (:desig-properties #:grasp #:cluster #:type #:object #:on #:to #:perceive
                      #:obj #:part-of #:at #:name #:pose #:handle #:lid #:small-bowl #:pot
-                     #:big-plate #:name))
+                     #:big-plate #:name #:of))
