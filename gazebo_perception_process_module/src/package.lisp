@@ -51,4 +51,4 @@
  (:shadowing-import-from :common-lisp)
  (:desig-properties #:grasp #:cluster #:type #:object #:on #:to #:perceive
 	       #:obj #:part-of #:at #:name #:pose #:handle #:lid #:small-bowl #:pot
-	       #:big-plate #:name))
+	       #:big-plate #:name #:radius))
