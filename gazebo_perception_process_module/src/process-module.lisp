@@ -132,16 +132,12 @@ gazebo. The pose is given in the `map' frame."
   "Creates and returns an object designator with object type
 `object-type' and object pose `object-pose' and attaches location
 designators according to handle information in `handles'."
-  (let ((combined-description (append `((desig-props:type ,object-type)
-                                        (desig-props:name ,name)
-                                        (desig-props:at
-                                         ,(cram-designators:make-designator
-                                           'cram-designators:location
-                                           `((desig-props:pose ,object-pose)))))
+  (let ((combined-description (append `((type ,object-type)
+                                        (name ,name)
+                                        (at ,(make-designator
+                                              'location `((pose ,object-pose)))))
                                       `,(make-handle-designator-sequence handles))))
-    (cram-designators:make-designator
-     'cram-designators:object
-     `,combined-description)))
+    (make-designator 'object combined-description)))
 
 (defun make-handle-designator-sequence (handles)
   "Converts the sequence `handles' (handle-pose handle-radius) into a
@@ -150,42 +146,34 @@ handle object then consist of a location designator describing its
 relative position as well as the handle's radius for grasping
 purposes."
   (mapcar (lambda (handle-desc)
-            `(desig-props:handle
-              ,(cram-designators:make-designator
-                'cram-designators:object
-                `((desig-props:at
-                   ,(cram-designators:make-designator
-                     'cram-designators:location
-                     `((desig-props:pose ,(first handle-desc)))))
-                  (desig-props:radius ,(second handle-desc))
-                  (desig-props:type desig-props:handle)))))
+            `(handle
+              ,(make-designator 'object
+                                `((at ,(make-designator 'location `((pose ,(first handle-desc)))))
+                                  (radius ,(second handle-desc))
+                                  (type handle)))))
           handles))
 
-(defclass projection-object-designator (desig:object-designator)
-  ())
-
-(defclass perceived-object (desig:object-designator-data)
+(defclass perceived-object (object-designator-data)
   ((designator :reader object-designator :initarg :designator)))
 
-(defmethod desig:designator-pose ((designator projection-object-designator))
-  (desig:object-pose (desig:reference designator)))
+(defmethod designator-pose ((designator object-designator))
+  (object-pose (reference designator)))
 
-(defmethod desig:designator-distance ((designator-1 desig:object-designator)
-                                      (designator-2 desig:object-designator))
-  (cl-transforms:v-dist (cl-transforms:origin (desig:designator-pose designator-1))
-                        (cl-transforms:origin (desig:designator-pose designator-2))))
+(defmethod designator-distance ((designator-1 object-designator)
+                                      (designator-2 object-designator))
+  (cl-transforms:v-dist (cl-transforms:origin (designator-pose designator-1))
+                        (cl-transforms:origin (designator-pose designator-2))))
 
 (defun make-object-designator (perceived-object &key parent type name)
   (assert parent)
-  (let ((pose (desig:object-pose perceived-object)))
-    (desig:make-effective-designator
+  (let ((pose (object-pose perceived-object)))
+    (make-effective-designator
      parent
-     :new-properties (desig:update-designator-properties
-                      `(,@(when type `((desig-props:type ,type)))
-                        (desig-props:at ,(desig:make-designator
-                                          'desig:location `((desig-props:pose ,pose))))
-                        ,@(when name `((desig-props:name ,name))))
-                      (when parent (desig:properties parent)))
+     :new-properties (update-designator-properties
+                      `(,@(when type `((type ,type)))
+                        (at ,(make-designator 'location `((pose ,pose))))
+                        ,@(when name `((name ,name))))
+                      (when parent (properties parent)))
      :data-object perceived-object)))
 
 (defun find-object-with-id (id &key name type)
@@ -205,8 +193,8 @@ purposes."
 (defun find-object (designator)
   "Finds objects with (optional) name `object-name' and type `type'
 and returns a list of elements of the form \(name pose\)."
-  (let ((object-name (when (slot-value designator 'desig:data)
-                       (desig:object-identifier (desig:reference designator)))))
+  (let ((object-name (when (slot-value designator 'data)
+                       (object-identifier (reference designator)))))
     (list (list object-name (get-model-pose object-name)))))
 
 ;; (defun find-with-bound-designator (designator)
@@ -297,10 +285,10 @@ and returns a list of elements of the form \(name pose\)."
 (def-object-search-function gazebo-object-search-function gazebo-detector
     (() desig perceived-object)
   (declare (ignore perceived-object))
-  (let* ((pose (reference (desig-prop-value desig 'desig-props:at)))
+  (let* ((pose (reference (desig-prop-value desig 'at)))
          (pose-transformed (tf:make-pose-stamped (tf:frame-id pose) 0.0 (tf:origin pose) (tf:orientation pose))))
     (list (make-instance 'perceived-object
-                         :object-identifier (desig-prop-value desig 'desig-props:name)
+                         :object-identifier (desig-prop-value desig 'name)
                          :pose pose-transformed))))
 
 (cram-roslisp-common:register-ros-init-function init-gazebo-perception-process-module)
