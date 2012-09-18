@@ -39,6 +39,7 @@
    #:roslisp
    #:cram-plan-failures)
   (:export #:gazebo-perception-process-module)
+  (:shadowing-import-from #:cpl fail)
   (:import-from #:cram-plan-knowledge
                 matching-process-module available-process-module)
   (:desig-properties #:grasp #:cluster #:type #:object #:on #:to #:perceive

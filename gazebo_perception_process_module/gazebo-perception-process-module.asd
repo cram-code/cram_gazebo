@@ -47,4 +47,5 @@
             :components
             ((:file "package")
              (:file "designator" :depends-on ("package"))
-             (:file "process-module" :depends-on ("package" "designator"))))))
+             (:file "ros" :depends-on ("package"))
+             (:file "process-module" :depends-on ("package" "designator" "ros"))))))
