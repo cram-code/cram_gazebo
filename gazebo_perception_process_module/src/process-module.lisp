@@ -35,6 +35,9 @@
   "Ordered list of known roles for designator resolution. They are
   processed in the order specified in this list")
 
+(defclass perceived-object (desig:object-designator-data)
+  ((designator :reader object-designator :initarg :designator)))
+
 (defmacro def-object-search-function (function-name role (props desig perceived-object)
                                       &body body)
   (check-type function-name symbol)
@@ -302,5 +305,13 @@ and returns a list of elements of the form \(name pose\)."
     (list (make-instance 'perceived-object
                          :object-identifier (desig-prop-value desig 'desig-props:name)
                          :pose pose-transformed))))
+
+(defmethod desig:designator-pose ((designator desig:object-designator))
+  (desig:object-pose (desig:reference designator)))
+
+(defmethod desig:designator-distance ((designator-1 desig:object-designator)
+                                      (designator-2 desig:object-designator))
+  (cl-transforms:v-dist (cl-transforms:origin (desig:designator-pose designator-1))
+                        (cl-transforms:origin (desig:designator-pose designator-2))))
 
 (cram-roslisp-common:register-ros-init-function init-gazebo-perception-process-module)
