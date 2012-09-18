@@ -32,6 +32,7 @@
   :description "Simple robot belief state manager"
 
   :depends-on (cram-roslisp-common
+	       gazebo-perception-process-module
                cram-language
                cram-reasoning
                process-modules
@@ -43,5 +44,5 @@
   ((:module "src"
             :components
             ((:file "package")
-             (:file "occasions")
+             (:file "occasions" :depends-on ("package"))
              (:file "event-handlers" :depends-on ("package" "occasions"))))))
