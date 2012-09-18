@@ -35,15 +35,12 @@
 (defun is-robot-at-location (temp-loc)
   (let* ((robot-pose (gazebo-perception-pm::get-model-pose "pr2"))
 	 (temp-pose (desig:reference temp-loc)))
-    (are-poses-similar temp-pose robot-pose)))
+    (poses-equal-p temp-pose robot-pose)))
 
-(defun are-poses-similar (pose1 pose2)
-  (let ((abs-offset-max 0.01)) ; Threshold 0.01
-    (if (< (abs (- (tf:x (tf:origin pose1)) (tf:x (tf:origin pose2)))) abs-offset-max)
-	(if (< (abs (- (tf:y (tf:origin pose1)) (tf:y (tf:origin pose2)))) abs-offset-max)
-	    (if (< (abs (- (tf:z (tf:origin pose1)) (tf:z (tf:origin pose2)))) abs-offset-max)
-		T)))
-    nil))
+(defun poses-equal-p (pose-1 pose-2 &key (position-threshold 0.01) (angle-threshold (/ pi 180)))
+  (declare (type cl-transforms:pose pose-1 pose-2))
+  (and (< (tf:v-dist (tf:origin pose-1) (tf:origin pose-2)) position-threshold)
+       (< (tf:angle-between-quaternions (tf:orientation pose-1) (tf:orientation pose-2)) angle-threshold)))
 
 (def-fact-group occasions (holds)
 
@@ -55,15 +52,19 @@
     (object-in-hand ?object ?_))
 
   (<- (loc plan-knowledge:robot ?location)
-    ;; Why does this not work with only one argument?
-    (lisp-fun is-robot-at-location ?location ?location))
+    (lisp-pred is-robot-at-location ?location))
 
   (<- (loc ?object ?location)
-    ;; This could fail due to mechanisms being different here than in
-    ;; the original cram_environment_representation.
-    (desig:obj-desig? object)
-    (object-designator-name ?object ?object-name)
-    (object-at-location ?_ ?object-name ?location))
+    (desig:object-designator ?object)
+    (desig:object-designator ?location)
+    (lisp-fun desig:designator-pose ?object ?object-pose)
+    (lisp-fun desig:reference ?location ?pose)
+    (lisp-pred poses-equal-p ?object-pose ?pose))
+
+  (<- (loc ?object ?location)
+    (not (bound ?location))
+    (desig:object-designator ?object)
+    (desig:designator 'desig:location ((desig-props:of ?object)) ?location))
 
   (<- (holds ?occasion)
     (call ?occasion)))
