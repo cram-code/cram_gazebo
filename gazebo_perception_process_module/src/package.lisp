@@ -25,30 +25,22 @@
 ;;; ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 ;;; POSSIBILITY OF SUCH DAMAGE.
 
-(desig-props:def-desig-package
- gazebo-perception-process-module
- (:documentation "Gazebo perception process module")
- (:nicknames :gazebo-perception-pm)
- (:use
-  #:common-lisp
-  #:cram-roslisp-common
-  #:cram-reasoning
-  #:cram-process-modules
-  #:cram-plan-library
-  #:cram-designators
-  #:crs
-  #:cut
-  #:desig
-  #:designators-ros
-  #:cljlo-utils
-  #:roslisp
-  #:cram-plan-failures
-  #:semantic-map-cache)
- (:export
-  #:gazebo-perception-process-module)
- (:import-from #:cram-plan-knowledge
-	       matching-process-module available-process-module)
- (:shadowing-import-from :common-lisp)
- (:desig-properties #:grasp #:cluster #:type #:object #:on #:to #:perceive
-	       #:obj #:part-of #:at #:name #:pose #:handle #:lid #:small-bowl #:pot
-	       #:big-plate #:name))
+(desig-props:def-desig-package gazebo-perception-process-module
+  (:documentation "Gazebo perception process module")
+  (:nicknames :gazebo-perception-pm)
+  (:use
+   #:common-lisp
+   #:cram-roslisp-common
+   #:cram-reasoning
+   #:cram-process-modules
+   #:cram-designators
+   #:cut
+   #:designators-ros
+   #:roslisp
+   #:cram-plan-failures)
+  (:export #:gazebo-perception-process-module)
+  (:import-from #:cram-plan-knowledge
+                matching-process-module available-process-module)
+  (:desig-properties #:grasp #:cluster #:type #:object #:on #:to #:perceive
+                     #:obj #:part-of #:at #:name #:pose #:handle #:lid #:small-bowl #:pot
+                     #:big-plate #:name))
