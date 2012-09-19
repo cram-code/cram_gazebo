@@ -40,6 +40,7 @@
                designators
                designators-ros
                cram-plan-failures
+               cram-projection
                gazebo_msgs-msg
                gazebo_msgs-srv)
   :components

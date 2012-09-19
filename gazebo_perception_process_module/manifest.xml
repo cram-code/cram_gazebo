@@ -18,8 +18,7 @@
   <depend package="cram_utilities" />
   <depend package="cram_language" />
   <depend package="cram_plan_failures" />
-  <depend package="gazebo_msgs"/>
+  <depend package="gazebo_msgs" />
+  <depend package="cram_projection" />
 
 </package>
-
-
