@@ -11,25 +11,14 @@
   
   <depend package="cram_roslisp_common" />
   <depend package="cram_process_modules" />
-  <depend package="cram_plan_library" />
-  <depend package="vision_msgs" />
-  <depend package="vision_srvs" />
   <depend package="cram_reasoning" />
   <depend package="cram_plan_knowledge" />
   <depend package="cram_designators" />
   <depend package="designators_ros" />
-  <depend package="cljlo" />
-  <depend package="cljlo_utils" />
   <depend package="cram_utilities" />
   <depend package="cram_language" />
-  <depend package="std_msgs" />
-  <depend package="actionlib_lisp" />
-  <depend package="alexandria" />
   <depend package="cram_plan_failures" />
-  <depend package="cl_semantic_map_utils" />
-  <depend package="semantic_map_cache" />
   <depend package="gazebo_msgs"/>
-  <depend package="gazebo"/>
 
 </package>
 

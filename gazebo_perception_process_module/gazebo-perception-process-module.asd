@@ -39,22 +39,14 @@
                cram-plan-knowledge
                designators
                designators-ros
-               cljlo
-               cljlo-utils
-               actionlib
-               semantic-map-cache
-               vision_msgs-msg
-               vision_srvs-srv
-               std_msgs-msg
-               pr2_msgs-msg
                cram-plan-failures
-	       gazebo_msgs-msg
-	       gazebo_msgs-srv
-               cl-semantic-map-utils
-               cram-plan-library)
+               gazebo_msgs-msg
+               gazebo_msgs-srv)
   :components
   ((:module "src"
             :components
             ((:file "package")
-             (:file "designator" :depends-on ("package"))
-             (:file "process-module" :depends-on ("package" "designator"))))))
+             (:file "utilities" :depends-on ("package"))
+             (:file "designator" :depends-on ("package" "utilities"))
+             (:file "ros" :depends-on ("package"))
+             (:file "process-module" :depends-on ("package" "utilities" "ros"))))))

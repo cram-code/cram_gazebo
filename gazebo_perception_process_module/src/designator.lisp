@@ -34,6 +34,17 @@
     (desig-prop ?desig (to perceive))
     (desig-prop ?desig (obj ?object))))
 
+(defun designator-model-pose (name)
+  (get-model-pose name :test #'object-names-equal))
+
+(def-fact-group gazebo-object-locations (desig-solution)
+
+  (<- (desig-solution ?designator ?solution)
+    (desig-prop ?designator (of ?object))
+    (obj-desig? ?object)
+    (desig-prop ?object (name ?name))
+    (lisp-fun designator-model-pose ?name ?solution)
+    (lisp-pred identity ?solution)))
 
 (def-fact-group process-module (matching-process-module available-process-module)
 
