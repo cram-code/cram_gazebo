@@ -55,4 +55,4 @@
   ((:module "src"
             :components
             ((:file "package")
-             (:file "utilities" :depends-on ("package"))))))
+             (:file "utils" :depends-on ("package"))))))
