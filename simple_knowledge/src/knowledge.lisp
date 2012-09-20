@@ -29,6 +29,9 @@
 
 (defvar *object-list* () "List of objects in the knowledge backend database")
 
+(defun clear-object-list ()
+  (setf *object-list* ()))
+
 (defun add-object-to-spawn (&key name handles pose file)
   (setf *object-list*
         (append *object-list*
