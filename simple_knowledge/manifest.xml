@@ -1,0 +1,16 @@
+<package>
+  <description brief="simple_knowledge">
+
+     simple_knowledge
+
+  </description>
+  <author>Jan Winkler</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/simple_knowledge</url>
+  
+  <depend package="roslisp"/>
+
+</package>
+
+
