@@ -32,7 +32,6 @@
   :description "Simple robot knowledge base"
 
   :depends-on (cram-roslisp-common
-	       gazebo-perception-process-module
                cram-language
                cram-reasoning
                process-modules
