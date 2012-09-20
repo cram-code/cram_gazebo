@@ -55,15 +55,15 @@
     (lisp-pred is-robot-at-location ?location))
 
   (<- (loc ?object ?location)
-    (desig:object-designator ?object)
-    (desig:object-designator ?location)
+    (desig:obj-desig? ?object)
+    (desig:obj-desig? ?location)
     (lisp-fun desig:designator-pose ?object ?object-pose)
     (lisp-fun desig:reference ?location ?pose)
     (lisp-pred poses-equal-p ?object-pose ?pose))
 
   (<- (loc ?object ?location)
     (not (bound ?location))
-    (desig:object-designator ?object)
+    (desig:obj-desig? ?object)
     (desig:designator 'desig:location ((desig-props:of ?object)) ?location))
 
   (<- (holds ?occasion)
