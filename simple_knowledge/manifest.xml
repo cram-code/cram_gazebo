@@ -10,6 +10,7 @@
   <url>http://ros.org/wiki/simple_knowledge</url>
   
   <depend package="roslisp"/>
+  <depend package="cram_gazebo_utilities"/>
 
 </package>
 

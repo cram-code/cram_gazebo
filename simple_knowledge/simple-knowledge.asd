@@ -39,9 +39,11 @@
                cram-utilities
                cram-plan-knowledge
 	       designators
-	       cram-plan-library)
+	       cram-plan-library
+	       cram-gazebo-utilities)
   :components
   ((:module "src"
             :components
             ((:file "package")
-             (:file "knowledge" :depends-on ("package"))))))
+	     (:file "facts" :depends-on ("package"))
+             (:file "knowledge" :depends-on ("package" "facts"))))))
