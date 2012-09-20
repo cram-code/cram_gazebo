@@ -36,4 +36,5 @@
   #:cram-reasoning
   #:cram-process-modules
   #:cram-plan-library #:cram-plan-knowledge #:cram-utilities)
- (:shadowing-import-from #:cram-plan-knowledge event object-attached object-in-hand event-side object-detached event-object on-event ?side holds))
+ (:shadowing-import-from #:cram-plan-knowledge event object-attached object-in-hand event-side object-detached event-object on-event ?side holds)
+ (:desig-properties #:mug #:pot #:iron #:bottle #:type))
