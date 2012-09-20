@@ -20,5 +20,6 @@
   <depend package="cram_plan_failures" />
   <depend package="gazebo_msgs" />
   <depend package="cram_projection" />
+  <depend package="simple_knowledge" />
 
 </package>

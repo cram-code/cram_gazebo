@@ -42,7 +42,8 @@
                cram-plan-failures
                cram-projection
                gazebo_msgs-msg
-               gazebo_msgs-srv)
+               gazebo_msgs-srv
+	       simple-knowledge)
   :components
   ((:module "src"
             :components
