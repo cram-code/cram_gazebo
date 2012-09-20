@@ -46,12 +46,6 @@
 (defun spawn-objects ()
   (loop for object-data in *object-list*
         do (cram-gazebo-utilities::spawn-gazebo-model
-            (first object-data)
-            (third object-data)
-            (fourth object-data))))
-
-(defun objects-with-type (type)
-  (force-ll (crs:prolog `(object-type ?name ,type))))
-
-(defun object-type-for-name (name)
-  (force-ll (crs:prolog `(object-type ,name ?type))))
+	    (first object-data)
+	    (third object-data)
+	    (fourth object-data))))
