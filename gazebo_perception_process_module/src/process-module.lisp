@@ -42,7 +42,8 @@
   (:documentation "Merges the description of `old-desig' with the
 properties of `perceived-object'")
   (:method ((old-desig object-designator) (po object-designator-data))
-    (let ((obj-loc-desig (make-designator 'location `((pose ,(object-pose po))))))
+    (let ((obj-loc-desig (make-designator 'location
+					  `((pose ,(object-pose po))))))
       (cons `(at ,obj-loc-desig)
             (remove 'at (description old-desig) :key #'car)))))
 
@@ -56,8 +57,10 @@ designators according to handle information in `handles'."
   (let ((combined-description (append `((type ,object-type)
                                         (name ,name)
                                         (at ,(make-designator
-                                              'location `((pose ,object-pose)))))
-                                      `,(make-handle-designator-sequence handles))))
+                                              'location
+					      `((pose ,object-pose)))))
+                                      `,(make-handle-designator-sequence
+					 handles))))
     (make-designator 'object combined-description)))
 
 (defun make-handle-designator-sequence (handles)
@@ -69,7 +72,9 @@ purposes."
   (mapcar (lambda (handle-desc)
             `(handle
               ,(make-designator 'object
-                                `((at ,(make-designator 'location `((pose ,(first handle-desc)))))
+                                `((at ,(make-designator
+					'location
+					`((pose ,(first handle-desc)))))
                                   (radius ,(second handle-desc))
                                   (type handle)))))
           handles))
@@ -102,6 +107,9 @@ instance of PERCEIVED-OBJECT."
   ;;
   ;; TODO(moesenle): add verification of location using the AT
   ;; property.
+  ;;
+  ;; TODO(winkler): Read object properties from simple-knowledge and
+  ;; equip the object designator with those properties.
   (with-desig-props (name) designator
     (let ((perceived-object (find-object name)))
       (if perceived-object
@@ -117,8 +125,10 @@ instance of PERCEIVED-OBJECT."
 (def-process-module gazebo-perception-process-module (input)
   (assert (typep input 'action-designator))
   (let ((object-designator (reference input)))
-    (ros-info (gazebo-perception-pm process-module) "Searching for object ~a" object-designator)
+    (ros-info (gazebo-perception-process-module process-module)
+	      "Searching for object ~a" object-designator)
     (let ((result (find-with-designator object-designator)))
-      (ros-info (gazebo-perception-pm process-module) "Found objects: ~a" result)
+      (ros-info (gazebo-perception-process-module process-module)
+		"Found objects: ~a" result)
       (emit-perception-event result)
       (list result))))
