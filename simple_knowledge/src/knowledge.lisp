@@ -70,7 +70,7 @@
 
 (defun spawn-objects ()
   (loop for object-data in *object-list*
-        do (cram-gazebo-utilities::spawn-gazebo-model
-	    (first object-data)
-	    (third object-data)
-	    (fourth object-data))))
+    do (cram-gazebo-utilities::spawn-gazebo-model
+      (object-name object-data)
+      (object-pose object-data)
+      (filename object-data))))
