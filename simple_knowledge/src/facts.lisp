@@ -27,12 +27,11 @@
 
 (in-package :simple-knowledge)
 
-(crs:def-fact-group gazebo-object-types ()
-  (crs:<- (object-type ?name mug)
-    (equal ?name "mug"))
-  (crs:<- (object-type ?name pot)
-    (equal ?name "cooking_pot"))
-  (crs:<- (object-type ?name iron)
-    (equal ?name "iron"))
-  (crs:<- (object-type ?name bottle)
-    (equal ?name "green_bottle")))
+(def-fact-group gazebo-object-types ()
+
+  (<- (gazebo-object ?object ?name ?type)
+    (symbol-value *object-list* ?objects)
+    (member ?object ?objects)
+    (get-slot-value ?object object-name ?obj-name)
+    (equal ?name ?obj-name)
+    (get-slot-value ?object object-type ?type)))
