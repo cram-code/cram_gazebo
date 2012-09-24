@@ -55,19 +55,6 @@
 (defun object-type-for-name (name)
   (force-ll (crs:prolog `(object-type ,name ?type))))
 
-(defun object-detail-for-name (name index)
-  (let ((position (position name
-		  *object-list*
-		  :test #'(lambda (object-name list-object)
-			    (equal object-name (first list-object))))))
-    (elt (elt *object-list* position) index)))
-
-(defun object-handles-for-name (name)
-  (object-detail-for-name name 1))
-
-(defun object-pose-for-name (name)
-  (object-detail-for-name name 2))
-
 (defun spawn-objects ()
   (loop for object-data in *object-list*
     do (cram-gazebo-utilities::spawn-gazebo-model
