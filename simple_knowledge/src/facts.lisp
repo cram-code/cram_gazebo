@@ -34,4 +34,8 @@
     (member ?object ?objects)
     (get-slot-value ?object object-name ?obj-name)
     (equal ?name ?obj-name)
-    (get-slot-value ?object object-type ?type)))
+    (get-slot-value ?object object-type ?type))
+
+  (<- (object-handles ?name ?handles)
+    (gazebo-object ?object ?name ?type)
+    (get-slot-value ?object handles ?handles)))
