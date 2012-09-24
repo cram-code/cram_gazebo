@@ -140,9 +140,9 @@ instance of PERCEIVED-OBJECT."
   ;; property.
   (with-desig-props (name) designator
     (let* ((perceived-object (find-object name))
-          (detailed-designators (knowledge-backed-designator
-                                name
-                                (object-pose perceived-object))))
+           (detailed-designators (knowledge-backed-designator
+                                  name
+                                  (object-pose perceived-object))))
       (if perceived-object
           (mapcar (lambda (details)
                     (perceived-object->designator details perceived-object))
