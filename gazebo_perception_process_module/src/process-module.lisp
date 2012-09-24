@@ -47,6 +47,21 @@ properties of `perceived-object'")
       (cons `(at ,obj-loc-desig)
             (remove 'at (description old-desig) :key #'car)))))
 
+(defun make-handled-object-description (&key object-type
+                                             object-pose
+                                             handles
+                                             name)
+  "Tailors the description of a handled object into a designator
+conforming list."
+  (append `((type ,object-type)
+            (at ,(make-designator
+                  'location
+                  `((pose ,object-pose)))))
+          `,(make-handle-designator-sequence
+             handles)
+          (when name
+            `((name ,name)))))
+
 (defun make-handled-object-designator (&key object-type
                                             object-pose
                                             handles
@@ -54,14 +69,11 @@ properties of `perceived-object'")
   "Creates and returns an object designator with object type
 `object-type' and object pose `object-pose' and attaches location
 designators according to handle information in `handles'."
-  (let ((combined-description (append `((type ,object-type)
-                                        (name ,name)
-                                        (at ,(make-designator
-                                              'location
-					      `((pose ,object-pose)))))
-                                      `,(make-handle-designator-sequence
-					 handles))))
-    (make-designator 'object combined-description)))
+  (make-designator 'object (make-handled-object-description
+                            :object-type object-type
+                            :object-pose object-pose
+                            :handles handles
+                            :name name)))
 
 (defun make-handle-designator-sequence (handles)
   "Converts the sequence `handles' (handle-pose handle-radius) into a
@@ -95,6 +107,24 @@ instance of PERCEIVED-OBJECT."
         description
         (cons `(name ,(object-identifier perceived-object)) description))))
 
+(defmethod knowledge-backed-designator (name (pose tf:pose-stamped))
+  ;; (let* ((desig-desc (make-new-desig-description designator perceived-object))
+  ;;        (at-index (position 'at desig-desc :test (lambda (x1 x2) (eq x1 (car x2)))))
+  ;;        (at-location (cadr (elt desig-desc at-index))))
+  (force-ll (lazy-mapcar (lambda (bindings)
+    (with-vars-bound (?object ?handles ?type) bindings
+      (declare (ignore ?object))
+      (with-designators ((kb-desig (object (make-handled-object-description
+                                            :object-type ?type
+                                            :object-pose pose
+                                            :handles ?handles
+                                            :name name
+                                            ))))
+        kb-desig)))
+        (prolog `(and (simple-knowledge::gazebo-object ?object ?name ?type)
+                      (simple-knowledge::object-handles ?name ?handles))
+                `(,@(when name `((?name . ,name))))))))
+
 (defun perceived-object->designator (designator perceived-object)
   (make-effective-designator
    designator
@@ -111,9 +141,14 @@ instance of PERCEIVED-OBJECT."
   ;; TODO(winkler): Read object properties from simple-knowledge and
   ;; equip the object designator with those properties.
   (with-desig-props (name) designator
-    (let ((perceived-object (find-object name)))
+    (let* ((perceived-object (find-object name))
+          (detailed-designators (knowledge-backed-designator
+                                name
+                                (object-pose perceived-object))))
       (if perceived-object
-          (perceived-object->designator designator perceived-object)
+          (mapcar (lambda (details)
+                    (perceived-object->designator details perceived-object))
+                  detailed-designators)
           (fail 'object-not-found :object-desig designator)))))
 
 (defun emit-perception-event (designator)
@@ -131,4 +166,4 @@ instance of PERCEIVED-OBJECT."
       (ros-info (gazebo-perception-process-module process-module)
 		"Found objects: ~a" result)
       (emit-perception-event result)
-      (list result))))
+      result)))
