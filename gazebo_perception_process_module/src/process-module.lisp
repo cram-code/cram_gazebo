@@ -47,6 +47,10 @@ properties of `perceived-object'")
       (cons `(at ,obj-loc-desig)
             (remove 'at (description old-desig) :key #'car)))))
 
+(defgeneric knowledge-backed-designator (name pose)
+  (:documentation "Creates a designator that includes information from the knowledge base about an object identified by `name`, which is located at pose `pose`.")
+  (:method (name (pose tf:pose-stamped))))
+
 (defun make-handled-object-description (&key object-type
                                              object-pose
                                              handles
@@ -108,9 +112,6 @@ instance of PERCEIVED-OBJECT."
         (cons `(name ,(object-identifier perceived-object)) description))))
 
 (defmethod knowledge-backed-designator (name (pose tf:pose-stamped))
-  ;; (let* ((desig-desc (make-new-desig-description designator perceived-object))
-  ;;        (at-index (position 'at desig-desc :test (lambda (x1 x2) (eq x1 (car x2)))))
-  ;;        (at-location (cadr (elt desig-desc at-index))))
   (force-ll (lazy-mapcar (lambda (bindings)
     (with-vars-bound (?object ?handles ?type) bindings
       (declare (ignore ?object))
