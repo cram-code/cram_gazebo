@@ -137,9 +137,6 @@ instance of PERCEIVED-OBJECT."
   ;;
   ;; TODO(moesenle): add verification of location using the AT
   ;; property.
-  ;;
-  ;; TODO(winkler): Read object properties from simple-knowledge and
-  ;; equip the object designator with those properties.
   (with-desig-props (name) designator
     (let* ((perceived-object (find-object name))
           (detailed-designators (knowledge-backed-designator
