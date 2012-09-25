@@ -61,3 +61,9 @@
       (object-name object-data)
       (object-pose object-data)
       (filename object-data))))
+
+(defun reposition-objects ()
+  (loop for object-data in *object-list*
+    do (cram-gazebo-utilities::set-model-state
+      (object-name object-data)
+      (object-pose object-data))))
