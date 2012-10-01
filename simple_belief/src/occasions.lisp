@@ -29,7 +29,7 @@
 
 (defmethod cram-plan-knowledge:holds (occasion &optional time-specification)
   (if time-specification
-      (prolog `(holds ?_  ,occasion ,time-specification))
+      (prolog `(holds ?_ ,occasion ,time-specification))
       (prolog `(holds ,occasion))))
 
 (defun is-robot-at-location (temp-loc)
