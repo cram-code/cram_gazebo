@@ -44,12 +44,17 @@
 
 (def-fact-group occasions (holds)
 
-  (<- (object-in-hand ?object ?side)
-    (symbol-value *attached-objects* ?attached-objects)
-    (member (?object . ?side) ?attached-objects))
-  
   (<- (object-in-hand ?object)
     (object-in-hand ?object ?_))
+
+  (<- (object-in-hand ?object ?side)
+    (symbol-value *attached-objects* ?attached-objects)
+    (bagof ?obj-transf (transformed-object-desig ?side ?attached-objects ?obj-transf) ?att-objs)
+    (member ?object ?att-objs))
+
+  (<- (transformed-object-desig ?side ?attached-objects ?obj-transf)
+    (member (?obj . ?side) ?attached-objects)
+    (lisp-fun desig:current-desig ?obj ?obj-transf))
 
   (<- (loc plan-knowledge:robot ?location)
     (lisp-pred is-robot-at-location ?location))
