@@ -49,8 +49,11 @@
 
   (<- (object-in-hand ?object ?side)
     (symbol-value *attached-objects* ?attached-objects)
-    (bagof ?obj-transf (transformed-object-desig ?side ?attached-objects ?obj-transf) ?att-objs)
-    (member ?object ?att-objs))
+    (bagof (?obj-transf . ?side) (transformed-object-desig ?side
+                                                           ?attached-objects
+                                                           ?obj-transf)
+           ?att-objs)
+    (member (?object . ?side) ?att-objs))
 
   (<- (transformed-object-desig ?side ?attached-objects ?obj-transf)
     (member (?obj . ?side) ?attached-objects)
