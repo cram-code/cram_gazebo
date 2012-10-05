@@ -30,7 +30,7 @@
 (defvar *attached-objects* nil)
 
 (defmethod on-event attach-objects ((event object-attached))
-  (format t "Attach.~%")
+  (format t "Attach ~a to gripper ~a.~%" (event-object event) (event-side event))
   (push (cons (event-object event) (event-side event)) *attached-objects*))
 
 (defmethod on-event detach-objects ((event object-detached))
