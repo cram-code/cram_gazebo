@@ -39,7 +39,8 @@
                cram-utilities
                cram-plan-knowledge
 	       designators
-	       cram-plan-library)
+	       cram-plan-library
+	       cram-gazebo-utilities)
   :components
   ((:module "src"
             :components

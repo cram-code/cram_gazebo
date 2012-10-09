@@ -33,14 +33,19 @@
       (prolog `(holds ,occasion))))
 
 (defun is-robot-at-location (temp-loc)
-  (let* ((robot-pose (gazebo-perception-pm::get-model-pose "pr2"))
+  (let* ((robot-pose (cram-gazebo-utilities::get-model-pose "pr2"))
 	 (temp-pose (desig:reference temp-loc)))
     (poses-equal-p temp-pose robot-pose)))
 
-(defun poses-equal-p (pose-1 pose-2 &key (position-threshold 0.01) (angle-threshold (/ pi 180)))
+(defun poses-equal-p (pose-1 pose-2 &key
+			     (position-threshold 0.01)
+			     (angle-threshold (/ pi 180)))
   (declare (type cl-transforms:pose pose-1 pose-2))
   (and (< (tf:v-dist (tf:origin pose-1) (tf:origin pose-2)) position-threshold)
-       (< (tf:angle-between-quaternions (tf:orientation pose-1) (tf:orientation pose-2)) angle-threshold)))
+       (< (tf:angle-between-quaternions
+	   (tf:orientation pose-1)
+	   (tf:orientation pose-2))
+	  angle-threshold)))
 
 (def-fact-group occasions (holds)
 
