@@ -76,5 +76,3 @@
 
   (<- (holds ?occasion)
     (call ?occasion)))
-
-(def-fact-group occasion-utilities ())
