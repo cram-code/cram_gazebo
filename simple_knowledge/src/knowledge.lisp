@@ -57,13 +57,25 @@
 
 (defun spawn-objects ()
   (loop for object-data in *object-list*
-    do (cram-gazebo-utilities::spawn-gazebo-model
-      (object-name object-data)
-      (object-pose object-data)
-      (filename object-data))))
+        do (spawn-object object-data)))
+
+(defun spawn-object (object-data)
+  ;; NOTE(winkler): First check to see whether the object to be
+  ;; spawned is already present in the gazebo world (i.e. if there is
+  ;; an object of the same name, as this is the only differentiation
+  ;; gazebo does for objects).
+  (let ((object-spawned
+          (eq (crs:prolog
+               `(gazebo-perception-process-module::object-in-world?
+                 ,(object-name object-data))) nil)))
+    (when object-spawned
+      (cram-gazebo-utilities::spawn-gazebo-model
+       (object-name object-data)
+       (object-pose object-data)
+       (filename object-data)))))
 
 (defun reposition-objects ()
   (loop for object-data in *object-list*
-    do (cram-gazebo-utilities::set-model-state
-      (object-name object-data)
-      (object-pose object-data))))
+        do (cram-gazebo-utilities::set-model-state
+            (object-name object-data)
+            (object-pose object-data))))
