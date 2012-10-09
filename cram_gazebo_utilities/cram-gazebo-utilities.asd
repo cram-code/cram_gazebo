@@ -47,14 +47,14 @@
                std_msgs-msg
                pr2_msgs-msg
                cram-plan-failures
-	       gazebo_msgs-msg
-	       gazebo_msgs-srv
+               gazebo_msgs-msg
+               gazebo_msgs-srv
                cl-semantic-map-utils
                cram-plan-library)
   :components
   ((:module "src"
-            :components
-            ((:file "package")
-	     (:file "ros" :depends-on ("package"))
-	     (:file "occasions" :depends-on ("ros" "package"))
-             (:file "utils" :depends-on ("package" "ros" "occasions"))))))
+    :components
+    ((:file "package")
+     (:file "ros" :depends-on ("package"))
+     (:file "occasions" :depends-on ("ros" "package"))
+     (:file "utils" :depends-on ("package" "ros" "occasions"))))))

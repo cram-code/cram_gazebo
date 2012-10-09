@@ -1,8 +1,8 @@
 <package>
   <description brief="simple_knowledge">
-
-     simple_knowledge
-
+    
+    simple_knowledge
+    
   </description>
   <author>Jan Winkler</author>
   <license>BSD</license>
@@ -11,7 +11,7 @@
   
   <depend package="roslisp"/>
   <depend package="cram_gazebo_utilities"/>
-
+  
 </package>
 
 

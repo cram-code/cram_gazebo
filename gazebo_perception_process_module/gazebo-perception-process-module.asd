@@ -43,11 +43,11 @@
                cram-projection
                gazebo_msgs-msg
                gazebo_msgs-srv
-	       simple-knowledge)
+               simple-knowledge)
   :components
   ((:module "src"
-            :components
-            ((:file "package")
-             (:file "utilities" :depends-on ("package"))
-             (:file "designator" :depends-on ("package" "utilities"))
-             (:file "process-module" :depends-on ("package" "utilities" "designator"))))))
+    :components
+    ((:file "package")
+     (:file "utilities" :depends-on ("package"))
+     (:file "designator" :depends-on ("package" "utilities"))
+     (:file "process-module" :depends-on ("package" "utilities" "designator"))))))

@@ -34,7 +34,7 @@
   (object-pose (reference designator)))
 
 (defmethod designator-distance ((designator-1 object-designator)
-                                      (designator-2 object-designator))
+                                (designator-2 object-designator))
   (cl-transforms:v-dist (cl-transforms:origin (designator-pose designator-1))
                         (cl-transforms:origin (designator-pose designator-2))))
 
@@ -43,18 +43,20 @@
 properties of `perceived-object'")
   (:method ((old-desig object-designator) (po object-designator-data))
     (let ((obj-loc-desig (make-designator 'location
-					  `((pose ,(object-pose po))))))
+                                          `((pose ,(object-pose po))))))
       (cons `(at ,obj-loc-desig)
             (remove 'at (description old-desig) :key #'car)))))
 
 (defgeneric knowledge-backed-designator (name pose)
-  (:documentation "Creates a designator that includes information from the knowledge base about an object identified by `name`, which is located at pose `pose`.")
+  (:documentation "Creates a designator that includes information from
+  the knowledge base about an object identified by `name`, which is
+  located at pose `pose`.")
   (:method (name (pose tf:pose-stamped))))
 
 (defun make-handled-object-description (&key object-type
-                                             object-pose
-                                             handles
-                                             name)
+                                          object-pose
+                                          handles
+                                          name)
   "Tailors the description of a handled object into a designator
 conforming list."
   (append `((type ,object-type)
@@ -67,9 +69,9 @@ conforming list."
             `((name ,name)))))
 
 (defun make-handled-object-designator (&key object-type
-                                            object-pose
-                                            handles
-                                            name)
+                                         object-pose
+                                         handles
+                                         name)
   "Creates and returns an object designator with object type
 `object-type' and object pose `object-pose' and attaches location
 designators according to handle information in `handles'."
@@ -89,8 +91,8 @@ purposes."
             `(handle
               ,(make-designator 'object
                                 `((at ,(make-designator
-					'location
-					`((pose ,(first handle-desc)))))
+                                        'location
+                                        `((pose ,(first handle-desc)))))
                                   (radius ,(second handle-desc))
                                   (type handle)))))
           handles))
@@ -101,8 +103,8 @@ instance of PERCEIVED-OBJECT."
   (let ((model-pose (cram-gazebo-utilities::get-model-pose name :test #'object-names-equal)))
     (when model-pose
       (make-instance 'perceived-object
-        :pose model-pose
-        :object-identifier name))))
+                     :pose model-pose
+                     :object-identifier name))))
 
 (defmethod make-new-desig-description ((old-desig object-designator)
                                        (perceived-object perceived-object))
@@ -112,19 +114,20 @@ instance of PERCEIVED-OBJECT."
         (cons `(name ,(object-identifier perceived-object)) description))))
 
 (defmethod knowledge-backed-designator (name (pose tf:pose-stamped))
-  (force-ll (lazy-mapcar (lambda (bindings)
-    (with-vars-bound (?object ?handles ?type) bindings
-      (declare (ignore ?object))
-      (with-designators ((kb-desig (object (make-handled-object-description
-                                            :object-type ?type
-                                            :object-pose pose
-                                            :handles ?handles
-                                            :name name
-                                            ))))
-        kb-desig)))
-        (prolog `(and (simple-knowledge::gazebo-object ?object ?name ?type)
-                      (simple-knowledge::object-handles ?name ?handles))
-                `(,@(when name `((?name . ,name))))))))
+  (force-ll (lazy-mapcar
+             (lambda (bindings)
+               (with-vars-bound (?object ?handles ?type) bindings
+                 (declare (ignore ?object))
+                 (with-designators ((kb-desig (object (make-handled-object-description
+                                                       :object-type ?type
+                                                       :object-pose pose
+                                                       :handles ?handles
+                                                       :name name
+                                                       ))))
+                   kb-desig)))
+             (prolog `(and (simple-knowledge::gazebo-object ?object ?name ?type)
+                           (simple-knowledge::object-handles ?name ?handles))
+                     `(,@(when name `((?name . ,name))))))))
 
 (defun perceived-object->designator (designator perceived-object)
   (make-effective-designator
@@ -150,18 +153,19 @@ instance of PERCEIVED-OBJECT."
           (fail 'object-not-found :object-desig designator)))))
 
 (defun emit-perception-event (designator)
-  (cram-plan-knowledge:on-event (make-instance 'cram-plan-knowledge:object-perceived-event
-                                  :perception-source :gazebo-perception-process-module
-                                  :object-designator designator))
+  (cram-plan-knowledge:on-event (make-instance
+                                 'cram-plan-knowledge:object-perceived-event
+                                 :perception-source :gazebo-perception-process-module
+                                 :object-designator designator))
   designator)
 
 (def-process-module gazebo-perception-process-module (input)
   (assert (typep input 'action-designator))
   (let ((object-designator (reference input)))
     (ros-info (gazebo-perception-process-module process-module)
-	      "Searching for object ~a" object-designator)
+              "Searching for object ~a" object-designator)
     (let ((result (find-with-designator object-designator)))
       (ros-info (gazebo-perception-process-module process-module)
-		"Found objects: ~a" result)
+                "Found objects: ~a" result)
       (emit-perception-event result)
       result)))
