@@ -9,8 +9,7 @@
 ;;;     * Redistributions in binary form must reproduce the above copyright
 ;;;       notice, this list of conditions and the following disclaimer in the
 ;;;       documentation and/or other materials provided with the distribution.
-;;;     * Neither the name of Institute for Artificial Intelligence/
-;;;       Universitaet Bremen nor the names of its
+;;;     * Neither the name of Willow Garage, Inc. nor the names of its
 ;;;       contributors may be used to endorse or promote products derived from
 ;;;       this software without specific prior written permission.
 ;;; 
@@ -26,30 +25,12 @@
 ;;; ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 ;;; POSSIBILITY OF SUCH DAMAGE.
 
-(defsystem gazebo-perception-process-module
-  :author "Jan Winkler <winkler@cs.uni-bremen.de>"
-  :license "BSD"
-  :description "Gazebo perception process module"
+(in-package :gazebo-perception-process-module)
 
-  :depends-on (cram-roslisp-common
-               cram-language
-               cram-reasoning
-               process-modules
-               cram-utilities
-               cram-plan-knowledge
-               designators
-               designators-ros
-               cram-plan-failures
-               cram-projection
-               gazebo_msgs-msg
-               gazebo_msgs-srv
-	       simple-knowledge)
-  :components
-  ((:module "src"
-            :components
-            ((:file "package")
-             (:file "utilities" :depends-on ("package"))
-             (:file "designator" :depends-on ("package" "utilities"))
-             (:file "ros" :depends-on ("package"))
-             (:file "occasions" :depends-on ("package" "ros"))
-             (:file "process-module" :depends-on ("package" "utilities" "ros" "occasions"))))))
+(defun object-spawned-p (object-name)
+  (not (eq (get-model-pose object-name) nil)))
+
+(def-fact-group gazebo-knowledge (object-in-world)
+  
+  (<- (object-in-world? ?object-name)
+    (lisp-pred object-spawned-p ?object-name)))
