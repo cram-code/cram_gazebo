@@ -35,7 +35,7 @@
     (desig-prop ?desig (obj ?object))))
 
 (defun designator-model-pose (name)
-  (get-model-pose name :test #'object-names-equal))
+  (cram-gazebo-utilities::get-model-pose name :test #'object-names-equal))
 
 (def-fact-group gazebo-object-locations (desig-solution)
 

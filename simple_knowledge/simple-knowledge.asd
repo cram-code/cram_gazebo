@@ -30,19 +30,19 @@
   :author "Jan Winkler <winkler@cs.uni-bremen.de>"
   :license "BSD"
   :description "Simple robot knowledge base"
-
+  
   :depends-on (cram-roslisp-common
                cram-language
                cram-reasoning
                process-modules
                cram-utilities
                cram-plan-knowledge
-	       designators
-	       cram-plan-library
-	       cram-gazebo-utilities)
+               designators
+               cram-plan-library
+               cram-gazebo-utilities)
   :components
   ((:module "src"
-            :components
-            ((:file "package")
-	     (:file "facts" :depends-on ("package"))
-             (:file "knowledge" :depends-on ("package" "facts"))))))
+    :components
+    ((:file "package")
+     (:file "facts" :depends-on ("package"))
+     (:file "knowledge" :depends-on ("package" "facts"))))))

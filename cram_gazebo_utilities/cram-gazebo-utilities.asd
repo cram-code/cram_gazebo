@@ -55,4 +55,6 @@
   ((:module "src"
             :components
             ((:file "package")
-             (:file "utils" :depends-on ("package"))))))
+	     (:file "ros" :depends-on ("package"))
+	     (:file "occasions" :depends-on ("ros" "package"))
+             (:file "utils" :depends-on ("package" "ros" "occasions"))))))

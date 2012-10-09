@@ -66,7 +66,7 @@
   ;; gazebo does for objects).
   (let ((object-spawned
           (eq (crs:prolog
-               `(gazebo-perception-process-module::object-in-world?
+               `(cram-gazebo-utilities::object-in-world?
                  ,(object-name object-data))) nil)))
     (when object-spawned
       (cram-gazebo-utilities::spawn-gazebo-model

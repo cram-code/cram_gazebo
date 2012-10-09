@@ -98,7 +98,7 @@ purposes."
 (defun find-object (name)
   "Finds the object named `name' in the gazebo world and returns an
 instance of PERCEIVED-OBJECT."
-  (let ((model-pose (get-model-pose name :test #'object-names-equal)))
+  (let ((model-pose (cram-gazebo-utilities::get-model-pose name :test #'object-names-equal)))
     (when model-pose
       (make-instance 'perceived-object
         :pose model-pose

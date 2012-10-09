@@ -50,6 +50,4 @@
             ((:file "package")
              (:file "utilities" :depends-on ("package"))
              (:file "designator" :depends-on ("package" "utilities"))
-             (:file "ros" :depends-on ("package"))
-             (:file "occasions" :depends-on ("package" "ros"))
-             (:file "process-module" :depends-on ("package" "utilities" "ros" "occasions"))))))
+             (:file "process-module" :depends-on ("package" "utilities" "designator"))))))

@@ -25,12 +25,12 @@
 ;;; ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 ;;; POSSIBILITY OF SUCH DAMAGE.
 
-(in-package :gazebo-perception-process-module)
+(in-package :cram-gazebo-utilities)
 
 (defun object-spawned-p (object-name)
   (not (eq (get-model-pose object-name) nil)))
 
-(def-fact-group gazebo-knowledge (object-in-world)
+(def-fact-group gazebo-knowledge (object-in-world?)
   
   (<- (object-in-world? ?object-name)
     (lisp-pred object-spawned-p ?object-name)))

@@ -26,14 +26,14 @@
 ;;; ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 ;;; POSSIBILITY OF SUCH DAMAGE.
 
-(in-package :gazebo-perception-process-module)
+(in-package :cram-gazebo-utilities)
 
 (defvar *gazebo-modelstates-subscriber* nil)
 (defvar *model-state-msg* (cram-language:make-fluent :name :model-state-msg))
 
-(defun init-gazebo-perception-process-module ()
-  "Initialize the gazebo perception process module. At the moment,
-this means subscribing on the gazebo model_states topic to be informed
+(defun init-cram-gazebo-utilities ()
+  "Initialize the cram gazebo utilities. At the moment,
+this means subscribing to the gazebo model_states topic to be informed
 about the current state of all models in the simulated world."
   (setf *gazebo-modelstates-subscriber*
         (subscribe
@@ -41,7 +41,7 @@ about the current state of all models in the simulated world."
          "gazebo_msgs/ModelStates"
          #'model-state-callback)))
 
-(cram-roslisp-common:register-ros-init-function init-gazebo-perception-process-module)
+(cram-roslisp-common:register-ros-init-function init-cram-gazebo-utilities)
 
 (defun model-state-callback (msg)
   "This is the callback for the gazebo topic subscriber subscribed on
