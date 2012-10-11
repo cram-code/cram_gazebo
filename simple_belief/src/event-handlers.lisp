@@ -31,7 +31,38 @@
 
 (defmethod on-event attach-objects ((event object-attached))
   (format t "Attach ~a to gripper ~a.~%" (event-object event) (event-side event))
+  (update-grasped-object-designator (event-object event) (list (event-side event)))
   (push (cons (event-object event) (event-side event)) *attached-objects*))
 
 (defmethod on-event detach-objects ((event object-detached))
   (format t "Detach.~%"))
+
+(defun update-grasped-object-designator (obj grippers &key new-properties)
+  (let* ((target-frame (var-value '?target-frame
+                                  (lazy-car
+                                   (crs:prolog
+                                    `(cram-pr2-knowledge::end-effector-link
+                                      ,(car grippers)
+                                      ?target-frame)))))
+         (obj-pose-in-gripper (tf:pose->pose-stamped
+                               target-frame
+                               0.0
+                               (cl-tf:transform-pose
+                                *tf*
+                                :pose (cram-designators:obj-desig-location
+                                       (cram-designators:current-desig obj))
+                                :target-frame target-frame)))
+         (loc-desig-in-gripper (cram-designators:make-designator
+                                'cram-designators:location
+                                (append `((pose ,obj-pose-in-gripper)
+                                          (in gripper))
+                                        (mapcar (lambda (grip)
+                                                  `(gripper ,grip))
+                                                grippers)))))
+    (cram-designators:make-designator
+     'object
+     (append `((at ,loc-desig-in-gripper) .
+               ,(remove 'at (cram-designators:description obj)
+                        :key #'car))
+             new-properties)
+     obj)))
