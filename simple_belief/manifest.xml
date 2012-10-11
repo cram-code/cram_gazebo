@@ -12,6 +12,8 @@
   <depend package="roslisp"/>
   <depend package="gazebo_perception_process_module"/>
   <depend package="cram_gazebo_utilities"/>
+  <depend package="cram_pr2_knowledge"/>
+  <depend package="cram_manipulation_knowledge"/>
 
 </package>
 

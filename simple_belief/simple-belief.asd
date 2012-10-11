@@ -32,18 +32,21 @@
   :description "Simple robot belief state manager"
 
   :depends-on (cram-roslisp-common
-	       gazebo-perception-process-module
+               gazebo-perception-process-module
                cram-language
                cram-reasoning
                process-modules
                cram-utilities
                cram-plan-knowledge
-	       designators
-	       cram-plan-library
-	       cram-gazebo-utilities)
+               designators
+               cram-plan-library
+               cram-gazebo-utilities
+               cram-pr2-knowledge
+               cram-manipulation-knowledge)
   :components
   ((:module "src"
-            :components
-            ((:file "package")
-             (:file "occasions" :depends-on ("package"))
-             (:file "event-handlers" :depends-on ("package" "occasions"))))))
+    :components
+    ((:file "package")
+     (:file "occasions" :depends-on ("package"))
+     (:file "utils" :depends-on ("package" "occasions"))
+     (:file "event-handlers" :depends-on ("package" "occasions" "utils"))))))
