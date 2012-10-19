@@ -29,7 +29,8 @@
 (in-package :cram-gazebo-utilities)
 
 (defvar *gazebo-modelstates-subscriber* nil)
-(defvar *model-state-msg* (cram-language:make-fluent :name :model-state-msg))
+(defvar *model-state-msg* (cram-language:make-fluent :name :model-state-msg
+                                                     :allow-tracing nil))
 
 (defun init-cram-gazebo-utilities ()
   "Initialize the cram gazebo utilities. At the moment,
