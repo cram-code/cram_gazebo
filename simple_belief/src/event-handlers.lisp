@@ -36,4 +36,4 @@
   (push (cons (event-object event) (event-side event)) *attached-objects*))
 
 (defmethod on-event detach-objects ((event object-detached))
-  (format t "Detach.~%"))
+  (format t "Detach object from gripper ~a.~%" (event-side event)))
