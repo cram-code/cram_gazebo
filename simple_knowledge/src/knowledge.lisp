@@ -41,7 +41,7 @@
   (setf *object-list* ()))
 
 (defun add-object-to-spawn (&key name handles type pose
-                              file min-handled)
+                              file min-handles)
   (setf *object-list*
         (append *object-list*
 		(list (make-instance 'gazebo-object-information
