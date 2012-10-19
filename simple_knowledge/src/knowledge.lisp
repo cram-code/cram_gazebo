@@ -35,13 +35,15 @@
    (handles :reader handles :initarg :handles)
    (object-pose :reader object-pose :initarg :object-pose)
    (filename :reader filename :initarg :filename)
-   (min-handles :reader min-handles :initarg :min-handles)))
+   (min-handles :reader min-handles :initarg :min-handles)
+   (collision-parts :reader collision-parts :initarg :collision-parts)))
 
 (defun clear-object-list ()
   (setf *object-list* ()))
 
 (defun add-object-to-spawn (&key name handles type pose
-                              file min-handles)
+                              file min-handles
+                              collision-parts)
   (setf *object-list*
         (append *object-list*
 		(list (make-instance 'gazebo-object-information
@@ -50,7 +52,8 @@
 				     :handles handles
 				     :object-pose pose
 				     :filename file
-             :min-handles min-handles)))))
+             :min-handles min-handles
+             :collision-parts collision-parts)))))
 
 (defun objects-with-type (type)
   (force-ll (crs:prolog `(object-type ?name ,type))))

@@ -56,7 +56,8 @@ properties of `perceived-object'")
 (defun make-handled-object-description (&key object-type
                                           object-pose
                                           handles
-                                          name)
+                                          name
+                                          collision-parts)
   "Tailors the description of a handled object into a designator
 conforming list."
   (append `((type ,object-type)
@@ -65,6 +66,8 @@ conforming list."
                   `((pose ,object-pose)))))
           `,(make-handle-designator-sequence
              handles)
+          `,(make-collision-part-designator-sequence
+             collision-parts)
           (when name
             `((name ,name)))))
 
@@ -80,6 +83,30 @@ designators according to handle information in `handles'."
                             :object-pose object-pose
                             :handles handles
                             :name name)))
+
+(defun make-collision-part-designator-sequence (collision-parts)
+  (mapcar (lambda (collision-part-desc)
+            `(collision-part
+              ,(make-designator 'object
+                                (append
+                                 `((at ,(make-designator
+                                         'location
+                                         `((pose ,(first collision-part-desc)))))
+                                   (type collision-part))
+                                 (make-shape-description collision-part-desc)))))
+          collision-parts))
+
+(defun make-shape-description (collision-part-desc)
+  (let ((shape (second collision-part-desc)))
+    (append `((shape ,shape))
+            (case shape
+              (:cylinder `((radius ,(third collision-part-desc))
+                           (length ,(fourth collision-part-desc))))
+              (t
+               (roslisp:ros-warn
+                (gazebo-perception process-module)
+                "Unsupported collision description: ~a.~%"
+                collision-part-desc))))))
 
 (defun make-handle-designator-sequence (handles)
   "Converts the sequence `handles' (handle-pose handle-radius) into a
@@ -116,17 +143,19 @@ instance of PERCEIVED-OBJECT."
 (defmethod knowledge-backed-designator (name (pose tf:pose-stamped))
   (force-ll (lazy-mapcar
              (lambda (bindings)
-               (with-vars-bound (?object ?handles ?type) bindings
+               (with-vars-bound (?object ?handles ?type ?collision-parts) bindings
                  (declare (ignore ?object))
                  (with-designators ((kb-desig (object (make-handled-object-description
                                                        :object-type ?type
                                                        :object-pose pose
                                                        :handles ?handles
                                                        :name name
+                                                       :collision-parts ?collision-parts
                                                        ))))
                    kb-desig)))
              (prolog `(and (simple-knowledge::gazebo-object ?object ?name ?type)
-                           (simple-knowledge::object-handles ?name ?handles))
+                           (simple-knowledge::object-handles ?name ?handles)
+                           (simple-knowledge::object-collision-parts ?name ?collision-parts))
                      `(,@(when name `((?name . ,name))))))))
 
 (defun perceived-object->designator (designator perceived-object)

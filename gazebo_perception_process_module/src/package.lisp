@@ -43,5 +43,6 @@
   (:import-from #:cram-plan-knowledge
                 matching-process-module available-process-module)
   (:desig-properties #:grasp #:cluster #:type #:object #:on #:to #:perceive
-                     #:obj #:part-of #:at #:name #:pose #:handle #:lid #:small-bowl #:pot
-                     #:big-plate #:name #:of #:radius))
+                     #:obj #:part-of #:at #:name #:pose #:handle #:lid #:small-bowl
+                     #:pot #:big-plate #:name #:of #:radius #:shape #:collision-part
+                     #:cylinder #:length))

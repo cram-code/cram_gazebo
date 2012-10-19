@@ -38,4 +38,8 @@
 
   (<- (object-handles ?name ?handles)
     (gazebo-object ?object ?name ?type)
-    (get-slot-value ?object handles ?handles)))
+    (get-slot-value ?object handles ?handles))
+
+  (<- (object-collision-parts ?name ?collision-parts)
+    (gazebo-object ?object ?name ?type)
+    (get-slot-value ?object collision-parts ?collision-parts)))
