@@ -57,6 +57,8 @@ properties of `perceived-object'")
                                           object-pose
                                           handles
                                           name
+                                          min-handles
+                                          height
                                           collision-parts)
   "Tailors the description of a handled object into a designator
 conforming list."
@@ -68,6 +70,10 @@ conforming list."
              handles)
           `,(make-collision-part-designator-sequence
              collision-parts)
+          (when min-handles
+            `((min-handles ,min-handles)))
+          (when height
+            `((height ,height)))
           (when name
             `((name ,name)))))
 
@@ -143,19 +149,29 @@ instance of PERCEIVED-OBJECT."
 (defmethod knowledge-backed-designator (name (pose tf:pose-stamped))
   (force-ll (lazy-mapcar
              (lambda (bindings)
-               (with-vars-bound (?object ?handles ?type ?collision-parts) bindings
+               (with-vars-bound (?object
+                                 ?handles
+                                 ?type
+                                 ?min-handles
+                                 ?height
+                                 ?collision-parts)
+                   bindings
                  (declare (ignore ?object))
-                 (with-designators ((kb-desig (object (make-handled-object-description
-                                                       :object-type ?type
-                                                       :object-pose pose
-                                                       :handles ?handles
-                                                       :name name
-                                                       :collision-parts ?collision-parts
-                                                       ))))
+                 (with-designators
+                     ((kb-desig (object (make-handled-object-description
+                                         :object-type ?type
+                                         :object-pose pose
+                                         :handles ?handles
+                                         :min-handles ?min-handles
+                                         :height ?height
+                                         :name name
+                                         :collision-parts ?collision-parts))))
                    kb-desig)))
              (prolog `(and (simple-knowledge::gazebo-object ?object ?name ?type)
                            (simple-knowledge::object-handles ?name ?handles)
-                           (simple-knowledge::object-collision-parts ?name ?collision-parts))
+                           (simple-knowledge::object-collision-parts ?name ?collision-parts)
+                           (simple-knowledge::object-min-handles ?name ?min-handles)
+                           (simple-knowledge::object-height ?name ?height))
                      `(,@(when name `((?name . ,name))))))))
 
 (defun perceived-object->designator (designator perceived-object)

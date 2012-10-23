@@ -36,13 +36,14 @@
    (object-pose :reader object-pose :initarg :object-pose)
    (filename :reader filename :initarg :filename)
    (min-handles :reader min-handles :initarg :min-handles)
+   (height :reader height :initarg :height)
    (collision-parts :reader collision-parts :initarg :collision-parts)))
 
 (defun clear-object-list ()
   (setf *object-list* ()))
 
 (defun add-object-to-spawn (&key name handles type pose
-                              file min-handles
+                              file min-handles height
                               collision-parts)
   (setf *object-list*
         (append *object-list*
@@ -53,6 +54,7 @@
 				     :object-pose pose
 				     :filename file
              :min-handles min-handles
+             :height height
              :collision-parts collision-parts)))))
 
 (defun objects-with-type (type)

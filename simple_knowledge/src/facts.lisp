@@ -42,4 +42,12 @@
 
   (<- (object-collision-parts ?name ?collision-parts)
     (gazebo-object ?object ?name ?type)
-    (get-slot-value ?object collision-parts ?collision-parts)))
+    (get-slot-value ?object collision-parts ?collision-parts))
+
+  (<- (object-min-handles ?name ?min-handles)
+    (gazebo-object ?object ?name ?type)
+    (get-slot-value ?object min-handles ?min-handles))
+
+  (<- (object-height ?name ?height)
+    (gazebo-object ?object ?name ?type)
+    (get-slot-value ?object height ?height)))
