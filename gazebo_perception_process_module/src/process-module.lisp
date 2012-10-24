@@ -58,7 +58,6 @@ properties of `perceived-object'")
                                           handles
                                           name
                                           min-handles
-                                          height
                                           collision-parts)
   "Tailors the description of a handled object into a designator
 conforming list."
@@ -72,8 +71,6 @@ conforming list."
              collision-parts)
           (when min-handles
             `((min-handles ,min-handles)))
-          (when height
-            `((height ,height)))
           (when name
             `((name ,name)))))
 
@@ -153,7 +150,6 @@ instance of PERCEIVED-OBJECT."
                                  ?handles
                                  ?type
                                  ?min-handles
-                                 ?height
                                  ?collision-parts)
                    bindings
                  (declare (ignore ?object))
@@ -163,15 +159,13 @@ instance of PERCEIVED-OBJECT."
                                          :object-pose pose
                                          :handles ?handles
                                          :min-handles ?min-handles
-                                         :height ?height
                                          :name name
                                          :collision-parts ?collision-parts))))
                    kb-desig)))
              (prolog `(and (simple-knowledge::gazebo-object ?object ?name ?type)
                            (simple-knowledge::object-handles ?name ?handles)
                            (simple-knowledge::object-collision-parts ?name ?collision-parts)
-                           (simple-knowledge::object-min-handles ?name ?min-handles)
-                           (simple-knowledge::object-height ?name ?height))
+                           (simple-knowledge::object-min-handles ?name ?min-handles))
                      `(,@(when name `((?name . ,name))))))))
 
 (defun perceived-object->designator (designator perceived-object)
