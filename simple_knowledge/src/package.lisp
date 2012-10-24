@@ -28,14 +28,23 @@
 (in-package :cl-user)
 
 (desig-props:def-desig-package
- simple-knowledge
- (:documentation "Simple robot knowledge backend")
- (:use
-  #:common-lisp
-  #:cram-roslisp-common
-  #:cram-reasoning
-  #:cram-process-modules
-  #:cram-plan-library #:cram-plan-knowledge #:cram-utilities)
- (:import-from #:cram-reasoning #:<- #:prolog #:def-fact-group)
- (:shadowing-import-from #:cram-plan-knowledge event object-attached object-in-hand event-side object-detached event-object on-event ?side holds)
- (:desig-properties #:mug #:pot #:iron #:bottle #:type #:min-handles))
+    simple-knowledge
+  (:documentation "Simple robot knowledge backend")
+  (:use
+   #:common-lisp
+   #:cram-roslisp-common
+   #:cram-reasoning
+   #:cram-process-modules
+   #:cram-plan-library #:cram-plan-knowledge #:cram-utilities)
+  (:import-from #:cram-reasoning #:<- #:prolog #:def-fact-group)
+  (:shadowing-import-from #:cram-plan-knowledge
+                          event
+                          object-attached
+                          object-in-hand
+                          event-side
+                          object-detached
+                          event-object
+                          on-event
+                          ?side
+                          holds)
+  (:desig-properties #:mug #:pot #:iron #:bottle #:type #:min-handles))

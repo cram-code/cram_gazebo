@@ -28,7 +28,7 @@
 (in-package :cl-user)
 
 (desig-props:def-desig-package simple-belief
-    (:documentation "Simple robot belief state manager")
+  (:documentation "Simple robot belief state manager")
   (:use
    #:common-lisp
    #:cram-roslisp-common
@@ -47,4 +47,4 @@
                           holds)
   (:desig-properties #:pose #:gripper #:in #:left #:right #:radius
                      #:shape #:collision-part #:cylinder #:length
-		     #:height))
+                     #:height))

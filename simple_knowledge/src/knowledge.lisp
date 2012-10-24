@@ -46,14 +46,14 @@
                               collision-parts)
   (setf *object-list*
         (append *object-list*
-		(list (make-instance 'gazebo-object-information
-				     :object-name name
-				     :object-type type
-				     :handles handles
-				     :object-pose pose
-				     :filename file
-             :min-handles min-handles
-             :collision-parts collision-parts)))))
+                (list (make-instance 'gazebo-object-information
+                                     :object-name name
+                                     :object-type type
+                                     :handles handles
+                                     :object-pose pose
+                                     :filename file
+                                     :min-handles min-handles
+                                     :collision-parts collision-parts)))))
 
 (defun objects-with-type (type)
   (force-ll (crs:prolog `(object-type ?name ,type))))
