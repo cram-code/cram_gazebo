@@ -35,6 +35,15 @@
    #:cram-reasoning
    #:cram-process-modules
    #:cram-plan-library #:cram-plan-knowledge #:cram-utilities)
-  (:shadowing-import-from #:cram-plan-knowledge event object-attached object-in-hand event-side object-detached event-object on-event ?side holds)
-  (:desig-properties #:pose #:gripper #:in #:left #:right #:radius #:shape #:collision-part
-                     #:cylinder #:length))
+  (:shadowing-import-from #:cram-plan-knowledge
+                          event
+                          object-attached
+                          object-in-hand
+                          event-side
+                          object-detached
+                          event-object
+                          on-event
+                          ?side
+                          holds)
+  (:desig-properties #:pose #:gripper #:in #:left #:right #:radius
+                     #:shape #:collision-part #:cylinder #:length))
