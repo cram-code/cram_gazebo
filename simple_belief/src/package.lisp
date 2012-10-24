@@ -46,4 +46,5 @@
                           ?side
                           holds)
   (:desig-properties #:pose #:gripper #:in #:left #:right #:radius
-                     #:shape #:collision-part #:cylinder #:length))
+                     #:shape #:collision-part #:cylinder #:length
+		     #:height))
