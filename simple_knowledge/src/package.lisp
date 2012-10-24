@@ -38,4 +38,4 @@
   #:cram-plan-library #:cram-plan-knowledge #:cram-utilities)
  (:import-from #:cram-reasoning #:<- #:prolog #:def-fact-group)
  (:shadowing-import-from #:cram-plan-knowledge event object-attached object-in-hand event-side object-detached event-object on-event ?side holds)
- (:desig-properties #:mug #:pot #:iron #:bottle #:type #:min-handles #:height))
+ (:desig-properties #:mug #:pot #:iron #:bottle #:type #:min-handles))
