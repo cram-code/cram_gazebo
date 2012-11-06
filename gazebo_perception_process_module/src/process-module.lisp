@@ -158,6 +158,10 @@ given, all known objects from the knowledge base are returned."
         (cons `(name ,(object-identifier perceived-object)) description))))
 
 (defmethod knowledge-backed-designator (name (pose tf:pose-stamped))
+  "Creates a new designator based on the unique name `name' of an
+object in the knowledge base. Information about type, handles,
+min-handles and collision-parts is read from the knowledge base and
+the object pose `pose' is added to the designator."
   (force-ll (lazy-mapcar
              (lambda (bindings)
                (with-vars-bound (?object
