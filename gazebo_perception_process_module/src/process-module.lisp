@@ -188,21 +188,21 @@ instance of PERCEIVED-OBJECT."
    :data-object perceived-object))
 
 (defun find-with-designator (designator)
-  ;; Since gazebo does not provide object types and we do not have a
-  ;; knowledge base for that yet.
-  ;;
   ;; TODO(moesenle): add verification of location using the AT
   ;; property.
-  (with-desig-props (name) designator
-    (let* ((perceived-object (find-object name))
-           (detailed-designators (knowledge-backed-designator
-                                  name
-                                  (object-pose perceived-object))))
-      (if perceived-object
-          (mapcar (lambda (details)
-                    (perceived-object->designator details perceived-object))
-                  detailed-designators)
-          (fail 'object-not-found :object-desig designator)))))
+  (with-desig-props (name type) designator
+    (let ((perceived-objects
+            (cond (type
+                   (find-type type))
+                  (t
+                   (list (find-object name))))))
+      (mapcar (lambda (perceived-object)
+                (let* ((retrieved-name (slot-value perceived-object 'object-identifier))
+                       (detailed-designators (knowledge-backed-designator
+                                              retrieved-name
+                                              (object-pose perceived-object))))
+                  (perceived-object->designator (first detailed-designators) perceived-object)))
+              perceived-objects))))
 
 (defun emit-perception-event (designator)
   (cram-plan-knowledge:on-event (make-instance
