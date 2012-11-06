@@ -127,6 +127,19 @@ purposes."
                                   (type handle)))))
           handles))
 
+(defun find-type (type)
+  "Find all objects of type `type' in the gazebo world and returns a
+list of instances of PERCEIVED-OBJECT."
+  (mapcar (lambda (name)
+            (find-object name))
+          (force-ll (lazy-mapcar (lambda (bindings)
+                                   (with-vars-bound (?name)
+                                       bindings
+                                     ?name))
+                                 (crs:prolog
+                                  `(simple-knowledge::gazebo-object
+                                    ?object ?name ,type))))))
+
 (defun find-object (name)
   "Finds the object named `name' in the gazebo world and returns an
 instance of PERCEIVED-OBJECT."
