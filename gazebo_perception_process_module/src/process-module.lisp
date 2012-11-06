@@ -127,27 +127,28 @@ purposes."
                                   (type handle)))))
           handles))
 
-(defun find-type (type)
-  "Find all objects of type `type' in the gazebo world and returns a
-list of instances of PERCEIVED-OBJECT."
+(defun find-object (&key object-name object-type)
+  "Finds objects based on either their name `object-name' or their
+type `object-type', depending what is given. An invalid combination of
+both parameters will result in an empty list. When no parameters are
+given, all known objects from the knowledge base are returned."
   (mapcar (lambda (name)
-            (find-object name))
+            (let ((model-pose (cram-gazebo-utilities::get-model-pose
+                               name :test #'object-names-equal)))
+              (when model-pose
+                (make-instance 'perceived-object
+                               :pose model-pose
+                               :object-identifier name))))
           (force-ll (lazy-mapcar (lambda (bindings)
-                                   (with-vars-bound (?name)
+                                   (with-vars-bound (?object)
                                        bindings
-                                     ?name))
-                                 (crs:prolog
-                                  `(simple-knowledge::gazebo-object
-                                    ?object ?name ,type))))))
-
-(defun find-object (name)
-  "Finds the object named `name' in the gazebo world and returns an
-instance of PERCEIVED-OBJECT."
-  (let ((model-pose (cram-gazebo-utilities::get-model-pose name :test #'object-names-equal)))
-    (when model-pose
-      (make-instance 'perceived-object
-                     :pose model-pose
-                     :object-identifier name))))
+                                     (simple-knowledge::object-name ?object)))
+                                 (crs:prolog `(simple-knowledge::gazebo-object
+                                               ?object
+                                               ,(cond (object-name object-name)
+                                                      (t '?name))
+                                               ,(cond (object-type object-type)
+                                                      (t '?type))))))))
 
 (defmethod make-new-desig-description ((old-desig object-designator)
                                        (perceived-object perceived-object))
@@ -191,11 +192,8 @@ instance of PERCEIVED-OBJECT."
   ;; TODO(moesenle): add verification of location using the AT
   ;; property.
   (with-desig-props (name type) designator
-    (let ((perceived-objects
-            (cond (type
-                   (find-type type))
-                  (t
-                   (list (find-object name))))))
+    (let ((perceived-objects (find-object :object-name name
+                                          :object-type type)))
       (mapcar (lambda (perceived-object)
                 (let* ((retrieved-name (slot-value perceived-object 'object-identifier))
                        (detailed-designators (knowledge-backed-designator
