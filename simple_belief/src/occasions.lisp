@@ -79,5 +79,14 @@
     (desig:obj-desig? ?object)
     (desig:designator 'desig:location ((desig-props:of ?object)) ?location))
 
+  ;; NOTE(winkler): This has to be rewritten into a calculation of
+  ;; whether the robot is looking into the direction of the location
+  ;; or not. This should be doable with a simple line calculation,
+  ;; originating from the head frame, ending in `?location'. The
+  ;; orientation vector then should be compared to the current head
+  ;; orientation.
+  (<- (looking-at ?location)
+    (fail))
+
   (<- (holds ?occasion)
     (call ?occasion)))
