@@ -28,14 +28,17 @@
 
 (in-package :gazebo-perception-pm)
 
+(defun designator-model-pose (name)
+  (cram-gazebo-utilities::get-model-pose name :test #'object-names-equal))
+
 (def-fact-group perception-action-designator (action-desig)
 
   (<- (action-desig ?desig ?object)
     (desig-prop ?desig (to perceive))
-    (desig-prop ?desig (obj ?object))))
+    (desig-prop ?desig (obj ?object)))
 
-(defun designator-model-pose (name)
-  (cram-gazebo-utilities::get-model-pose name :test #'object-names-equal))
+  (<- (available-process-module gazebo-perception-process-module)
+    (symbol-value cram-projection:*projection-environment* nil)))
 
 (def-fact-group gazebo-object-locations (desig-solution)
 
@@ -51,7 +54,4 @@
   (<- (matching-process-module ?designator gazebo-perception-process-module)
     (desig-prop ?designator (to perceive))
     (desig-prop ?designator (obj ?object))
-    (obj-desig? ?object))
-
-  (<- (available-process-module gazebo-perception-process-module)
-    (symbol-value cram-projection:*projection-environment* nil)))
+    (obj-desig? ?object)))
