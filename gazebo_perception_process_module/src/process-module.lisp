@@ -162,29 +162,32 @@ given, all known objects from the knowledge base are returned."
 object in the knowledge base. Information about type, handles,
 min-handles and collision-parts is read from the knowledge base and
 the object pose `pose' is added to the designator."
-  (force-ll (lazy-mapcar
-             (lambda (bindings)
-               (with-vars-bound (?object
-                                 ?handles
-                                 ?type
-                                 ?min-handles
-                                 ?collision-parts)
-                   bindings
-                 (declare (ignore ?object))
-                 (with-designators
-                     ((kb-desig (object (make-handled-object-description
-                                         :object-type ?type
-                                         :object-pose pose
-                                         :handles ?handles
-                                         :min-handles ?min-handles
-                                         :name name
-                                         :collision-parts ?collision-parts))))
-                   kb-desig)))
-             (prolog `(and (simple-knowledge::gazebo-object ?object ?name ?type)
-                           (simple-knowledge::object-handles ?name ?handles)
-                           (simple-knowledge::object-collision-parts ?name ?collision-parts)
-                           (simple-knowledge::object-min-handles ?name ?min-handles))
-                     `(,@(when name `((?name . ,name))))))))
+  (let ((bindings (prolog `(and (simple-knowledge::gazebo-object ?object ?name ?type)
+                                (simple-knowledge::object-handles ?name ?handles)
+                                (simple-knowledge::object-collision-parts ?name ?collision-parts)
+                                (simple-knowledge::object-min-handles ?name ?min-handles))
+                          `(,@(when name `((?name . ,name)))))))
+    (cond (bindings
+           (with-vars-bound (?object
+                             ?handles
+                             ?type
+                             ?min-handles
+                             ?collision-parts)
+               (first bindings)
+             (declare (ignore ?object))
+             (with-designators
+                 ((kb-desig (object (make-handled-object-description
+                                     :object-type ?type
+                                     :object-pose pose
+                                     :handles ?handles
+                                     :min-handles ?min-handles
+                                     :name name
+                                     :collision-parts ?collision-parts))))
+               kb-desig)))
+          (t
+           (roslisp:ros-warn (gazebo-perception-process-module)
+                             "Requested knowledge backed designator for unknown object: ~a"
+                             name)))))
 
 (defun perceived-object->designator (designator perceived-object)
   (make-effective-designator
@@ -196,15 +199,13 @@ the object pose `pose' is added to the designator."
   ;; TODO(moesenle): add verification of location using the AT
   ;; property.
   (with-desig-props (name type) designator
-    (let ((perceived-objects (find-object :object-name name
-                                          :object-type type)))
-      (mapcar (lambda (perceived-object)
-                (let* ((retrieved-name (slot-value perceived-object 'object-identifier))
-                       (detailed-designators (knowledge-backed-designator
-                                              retrieved-name
-                                              (object-pose perceived-object))))
-                  (perceived-object->designator (first detailed-designators) perceived-object)))
-              perceived-objects))))
+    (mapcar (lambda (perceived-object)
+                (perceived-object->designator
+                 (knowledge-backed-designator
+                  (object-identifier perceived-object)
+                  (object-pose perceived-object))
+                 perceived-object))
+            (find-object :object-name name :object-type type))))
 
 (defun emit-perception-event (designator)
   (cram-plan-knowledge:on-event (make-instance
