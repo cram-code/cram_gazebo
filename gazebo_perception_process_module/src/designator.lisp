@@ -29,7 +29,10 @@
 (in-package :gazebo-perception-pm)
 
 (defun designator-model-pose (name)
-  (cram-gazebo-utilities::get-model-pose name :test #'object-names-equal))
+  (object-pose (first (find-object :object-name name))))
+
+(defun designator-model-pose-from-type (type)
+  (object-pose (first (find-object :object-type type))))
 
 (def-fact-group process-module (matching-process-module available-process-module)
 
@@ -54,4 +57,11 @@
     (obj-desig? ?object)
     (desig-prop ?object (name ?name))
     (lisp-fun designator-model-pose ?name ?solution)
+    (lisp-pred identity ?solution))
+
+  (<- (desig-solution ?designator ?solution)
+    (desig-prop ?designator (of ?object))
+    (obj-desig? ?object)
+    (desig-prop ?object (type ?type))
+    (lisp-fun designator-model-pose-from-type ?type ?solution)
     (lisp-pred identity ?solution)))
