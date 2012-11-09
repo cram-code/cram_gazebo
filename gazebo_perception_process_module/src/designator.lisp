@@ -29,10 +29,20 @@
 (in-package :gazebo-perception-pm)
 
 (defun designator-model-pose (name)
-  (object-pose (first (find-object :object-name name))))
+  (let ((found-objects (find-object :object-name name)))
+    (when found-objects
+      (object-pose (first found-objects)))))
 
+;; NOTE(winkler): When objects are referred to by their type rather
+;; than their name, multiple instances can show up in the
+;; results. When requested to look at these objects (i.e. a location
+;; to look at this object group), the pose of the first object (if
+;; any) is returned. This results in the robot always looking towards
+;; the first object that is returned by perception.
 (defun designator-model-pose-from-type (type)
-  (object-pose (first (find-object :object-type type))))
+  (let ((found-objects (find-object :object-type type)))
+    (when found-objects
+      (object-pose (first found-objects)))))
 
 (def-fact-group process-module (matching-process-module available-process-module)
 
