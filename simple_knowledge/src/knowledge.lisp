@@ -72,16 +72,16 @@
   ;; gazebo does for objects).
   (let ((object-spawned
           (eq (crs:prolog
-               `(cram-gazebo-utilities::object-in-world?
+               `(cram-gazebo-utilities:object-in-world?
                  ,(object-name object-data))) nil)))
     (when object-spawned
-      (cram-gazebo-utilities::spawn-gazebo-model
+      (cram-gazebo-utilities:spawn-gazebo-model
        (object-name object-data)
        (object-pose object-data)
        (filename object-data)))))
 
 (defun reposition-objects ()
   (loop for object-data in *object-list*
-        do (cram-gazebo-utilities::set-model-state
+        do (cram-gazebo-utilities:set-model-state
             (object-name object-data)
             (object-pose object-data))))

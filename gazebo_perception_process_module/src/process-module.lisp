@@ -133,7 +133,7 @@ type `object-type', depending what is given. An invalid combination of
 both parameters will result in an empty list. When no parameters are
 given, all known objects from the knowledge base are returned."
   (mapcar (lambda (name)
-            (let ((model-pose (cram-gazebo-utilities::get-model-pose
+            (let ((model-pose (cram-gazebo-utilities:get-model-pose
                                name :test #'object-names-equal)))
               (when model-pose
                 (make-instance 'perceived-object
