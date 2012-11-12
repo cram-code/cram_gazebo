@@ -50,4 +50,5 @@
     ((:file "package")
      (:file "utilities" :depends-on ("package"))
      (:file "designator" :depends-on ("package" "utilities"))
-     (:file "process-module" :depends-on ("package" "utilities" "designator"))))))
+     (:file "process-module"
+      :depends-on ("package" "utilities" "designator"))))))
