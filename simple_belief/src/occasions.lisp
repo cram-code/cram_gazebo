@@ -33,7 +33,7 @@
       (prolog `(holds ,occasion))))
 
 (defun is-robot-at-location (temp-loc)
-  (let* ((robot-pose (cram-gazebo-utilities::get-model-pose "pr2"))
+  (let* ((robot-pose (cram-gazebo-utilities:get-model-pose "pr2"))
 	 (temp-pose (desig:reference temp-loc)))
     (poses-equal-p temp-pose robot-pose)))
 
