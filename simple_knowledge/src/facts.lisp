@@ -27,6 +27,16 @@
 
 (in-package :simple-knowledge)
 
+(def-fact-group utilities ()
+  (<- (equate-object-type-symbols ?lhs ?rhs)
+    (bound ?lhs)
+    (bound ?rhs)
+    (lisp-fun symbol-name ?lhs ?lhs-name)
+    (lisp-fun symbol-name ?rhs ?rhs-name)
+    (lisp-pred equal ?lhs-name ?rhs-name))
+
+  (<- (equate-object-type-symbols ?symbol ?symbol)))
+
 (def-fact-group gazebo-object-types ()
 
   (<- (gazebo-object ?object ?name ?type)
@@ -34,7 +44,8 @@
     (member ?object ?objects)
     (get-slot-value ?object object-name ?obj-name)
     (equal ?name ?obj-name)
-    (get-slot-value ?object object-type ?type))
+    (get-slot-value ?object object-type ?object-type)
+    (equate-object-type-symbols ?object-type ?type))
 
   (<- (object-handles ?name ?handles)
     (gazebo-object ?object ?name ?_)
