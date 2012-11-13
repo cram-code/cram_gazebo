@@ -50,4 +50,9 @@
 
   (<- (object-height ?name ?height)
     (gazebo-object ?object ?name ?_)
-    (get-slot-value ?object height ?height)))
+    (get-slot-value ?object height ?height))
+
+  (<- (object-filename ?name ?filename)
+    (gazebo-object ?object ?name ?_)
+    (get-slot-value ?object filename ?filename)))
+
