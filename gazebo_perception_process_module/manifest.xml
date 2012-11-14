@@ -16,10 +16,12 @@
   <depend package="cram_designators" />
   <depend package="designators_ros" />
   <depend package="cram_utilities" />
-  <depend package="cram_language" />
+  <depend package="cram_manipulation_knowledge" />
   <depend package="cram_plan_failures" />
   <depend package="gazebo_msgs" />
   <depend package="cram_projection" />
+  <depend package="cram_physics_utils" />
   <depend package="simple_knowledge" />
+  <depend package="cl_urdf" />
 
 </package>
