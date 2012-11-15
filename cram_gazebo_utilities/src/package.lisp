@@ -44,4 +44,5 @@
   #:cljlo-utils
   #:roslisp
   #:cram-plan-failures
-  #:semantic-map-cache))
+  #:semantic-map-cache)
+  (:export get-model-pose set-model-state spawn-gazebo-model object-in-world?))

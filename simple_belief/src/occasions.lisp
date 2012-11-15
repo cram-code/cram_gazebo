@@ -33,7 +33,7 @@
       (prolog `(holds ,occasion))))
 
 (defun is-robot-at-location (temp-loc)
-  (let* ((robot-pose (cram-gazebo-utilities::get-model-pose "pr2"))
+  (let* ((robot-pose (cram-gazebo-utilities:get-model-pose "pr2"))
 	 (temp-pose (desig:reference temp-loc)))
     (poses-equal-p temp-pose robot-pose)))
 
@@ -46,6 +46,18 @@
 	   (tf:orientation pose-1)
 	   (tf:orientation pose-2))
 	  angle-threshold)))
+
+;; NOTE(winkler): This function has to be implemented. Using this, the
+;; predicate `looking-at' will determine whether the robot's PTU is
+;; actually facing the point given as `loc'.
+(defun robot-looking-at (loc)
+  (let ((target-pose-stamped (desig:reference loc))
+	(head-pointing-at-pose-stamped nil))
+    ;; NOTE(winkler): Returning `nil' always, so that the PTU will be
+    ;; panned and tilted towards the target pose `target-pose-stamped'
+    ;; in any case. The current pointing angles of the PTU have to be
+    ;; read, though.
+    ))
 
 (def-fact-group occasions (holds)
 
@@ -78,6 +90,15 @@
     (not (bound ?location))
     (desig:obj-desig? ?object)
     (desig:designator 'desig:location ((desig-props:of ?object)) ?location))
+
+  ;; NOTE(winkler): This has to be rewritten into a calculation of
+  ;; whether the robot is looking into the direction of the location
+  ;; or not. This should be doable with a simple line calculation,
+  ;; originating from the head frame, ending in `?location'. The
+  ;; orientation vector then should be compared to the current head
+  ;; orientation.
+  (<- (looking-at ?location)
+    (lisp-pred robot-looking-at ?location))
 
   (<- (holds ?occasion)
     (call ?occasion)))

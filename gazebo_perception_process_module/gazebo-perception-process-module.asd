@@ -41,13 +41,18 @@
                designators-ros
                cram-plan-failures
                cram-projection
+               cram-manipulation-knowledge
+               physics-utils
                gazebo_msgs-msg
                gazebo_msgs-srv
-               simple-knowledge)
+               simple-knowledge
+               cl-urdf)
   :components
   ((:module "src"
     :components
     ((:file "package")
      (:file "utilities" :depends-on ("package"))
      (:file "designator" :depends-on ("package" "utilities"))
-     (:file "process-module" :depends-on ("package" "utilities" "designator"))))))
+     (:file "gazebo-designator-data" :depends-on ("package"))
+     (:file "process-module"
+      :depends-on ("package" "utilities" "designator" "gazebo-designator-data"))))))

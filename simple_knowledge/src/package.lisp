@@ -47,4 +47,10 @@
                           on-event
                           ?side
                           holds)
+  (:export gazebo-object-information object-name object-type handles
+           object-pose filename min-handles collision-parts
+           clear-object-list add-object-to-spawn objects-with-type
+           objects-for-name spawn-objects spawn-object reposition-objects
+           gazebo-object object-handles object-collision-parts
+           object-min-handles object-height object-filename)
   (:desig-properties #:mug #:pot #:iron #:bottle #:type #:min-handles))
