@@ -36,4 +36,9 @@
   (push (cons (event-object event) (event-side event)) *attached-objects*))
 
 (defmethod on-event detach-objects ((event object-detached))
-  (format t "Detach object from gripper ~a.~%" (event-side event)))
+  (format t "Detach object from gripper ~a.~%" (event-side event))
+  (setf *attached-objects* 
+        (remove (cons (event-object event) (event-side event)) *attached-objects* 
+                :test (lambda (a b) 
+                        (equal (car a)(car b))
+                        (equal (cdr a) (cdr b))))))
