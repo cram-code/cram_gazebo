@@ -27,8 +27,6 @@
 
 (in-package :simple-belief)
 
-(defvar *attached-objects* nil)
-
 (defmethod on-event attach-objects ((event object-attached))
   (format t "Attach object to gripper ~a.~%" (event-side event))
   (update-grasped-object-designator (event-object event)
