@@ -129,5 +129,5 @@ given, all known objects from the knowledge base are returned."
         (fail 'object-not-found :object-desig input))
       (ros-info (gazebo-perception-process-module process-module)
                 "Found objects: ~a" result)
-      (emit-perception-event result)
+      (map 'nil #'emit-perception-event result)
       result)))
