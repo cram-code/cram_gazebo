@@ -125,6 +125,8 @@ given, all known objects from the knowledge base are returned."
     (ros-info (gazebo-perception-process-module process-module)
               "Searching for object ~a" object-designator)
     (let ((result (find-with-designator object-designator)))
+      (unless result
+        (fail 'object-not-found :object-desig input))
       (ros-info (gazebo-perception-process-module process-module)
                 "Found objects: ~a" result)
       (emit-perception-event result)
