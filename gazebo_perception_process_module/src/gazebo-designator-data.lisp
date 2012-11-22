@@ -58,8 +58,8 @@ element (:VISUAL) or the collision element (:COLLISION)."
   "Returns the faces of `3d-model' as sequences of indices in the
   vertex field instead of sequences of points."
   (declare (type physics-utils:3d-model 3d-model))
-  (flet ((point-index (vetrex vertices)
-           (position vetrex vertices
+  (flet ((point-index (vertex vertices)
+           (position vertex vertices
                      :test (lambda (a b)
                              (< (cl-transforms:v-dist a b) 1e-6)))))
     (let ((vertices (physics-utils:3d-model-vertices 3d-model))
