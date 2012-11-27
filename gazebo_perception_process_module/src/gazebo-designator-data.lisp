@@ -28,6 +28,9 @@
 
 (in-package :gazebo-perception-process-module)
 
+(defparameter *urdf-cache* (make-hash-table :test #'equal)
+  "Cache for storing loaded URDF files.")
+
 (defclass gazebo-designator-data (object-designator-data)
   ((type :initarg :type :reader object-type)))
 
@@ -45,14 +48,16 @@
 stream. `mesh-identifier' can be used to select either the visual
 element (:VISUAL) or the collision element (:COLLISION)."
   (declare (type (or pathname string stream) urdf))
-  (let ((urdf (cl-urdf:parse-urdf urdf)))
+  (let ((parsed-urdf (or (gethash urdf *urdf-cache*)
+                         (setf (gethash urdf *urdf-cache*)
+                               (cl-urdf:parse-urdf urdf)))))
     (assert
-     (eql (hash-table-count (cl-urdf:links urdf)) 1) ()
+     (eql (hash-table-count (cl-urdf:links parsed-urdf)) 1) ()
      "At the moment, only object URDF files with exactly one link are supported.")
     (cl-urdf:geometry
      (ecase mesh-identifier
-       (:visual (cl-urdf:visual (cl-urdf:root-link urdf)))
-       (:collision (cl-urdf:collision (cl-urdf:root-link urdf)))))))
+       (:visual (cl-urdf:visual (cl-urdf:root-link parsed-urdf)))
+       (:collision (cl-urdf:collision (cl-urdf:root-link parsed-urdf)))))))
 
 (defun 3d-model-faces->indices (3d-model)
   "Returns the faces of `3d-model' as sequences of indices in the
