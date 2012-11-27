@@ -67,15 +67,18 @@ element (:VISUAL) or the collision element (:COLLISION)."
       (map 'vector (lambda (face)
                      (mapcar (lambda (point)
                                (point-index point vertices))
-                             face))
+                             (physics-utils:face-points face)))
            faces))))
 
-(defgeneric geometry->designator-data (name pose type geometry)
+(defgeneric geometry->designator-data (name pose type geometry
+                                       &optional geometry-pose)
   (:documentation "Returns an instance of a subclass of
   OBJECT-DESIGNATOR-DATA matching `geometry'.")
 
-  (:method (name pose type (mesh cl-urdf:mesh))
-    (let ((mesh (cl-urdf:3d-model mesh)))
+  (:method (name pose type (mesh cl-urdf:mesh)
+            &optional (geometry-pose (cl-transforms:make-identity-pose)))
+    (let ((mesh (physics-utils:transform-3d-model
+                 (cl-urdf:3d-model mesh) geometry-pose)))
       (make-instance 'gazebo-designator-mesh-data
         :object-identifier name
         :type type
