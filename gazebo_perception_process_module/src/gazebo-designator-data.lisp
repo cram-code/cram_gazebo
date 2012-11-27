@@ -59,6 +59,20 @@ element (:VISUAL) or the collision element (:COLLISION)."
        (:visual (cl-urdf:visual (cl-urdf:root-link parsed-urdf)))
        (:collision (cl-urdf:collision (cl-urdf:root-link parsed-urdf)))))))
 
+(defun get-object-geometry-pose (urdf &key (mesh-identifier :visual))
+  "Returns a CL-TRANSFORMS:POSE for the geometry element indicated by
+  `mesh-identified' of root link in `urdf'"
+  (let ((parsed-urdf (or (gethash urdf *urdf-cache*)
+                         (setf (gethash urdf *urdf-cache*)
+                               (cl-urdf:parse-urdf urdf)))))
+    (assert
+     (eql (hash-table-count (cl-urdf:links parsed-urdf)) 1) ()
+     "At the moment, only object URDF files with exactly one link are supported.")
+    (cl-urdf:origin
+     (ecase mesh-identifier
+       (:visual (cl-urdf:visual (cl-urdf:root-link parsed-urdf)))
+       (:collision (cl-urdf:collision (cl-urdf:root-link parsed-urdf)))))))
+
 (defun 3d-model-faces->indices (3d-model)
   "Returns the faces of `3d-model' as sequences of indices in the
   vertex field instead of sequences of points."
@@ -91,30 +105,36 @@ element (:VISUAL) or the collision element (:COLLISION)."
         :vertices (physics-utils:3d-model-vertices mesh)
         :faces (3d-model-faces->indices mesh))))
   
-  (:method (name pose type (box cl-urdf:box))
+  (:method (name pose type (box cl-urdf:box)
+            &optional (geometry-pose (cl-transforms:make-identity-pose)))
     (make-instance 'gazebo-designator-shape-data
       :object-identifier name
       :type type
-      :pose pose
+      :pose (cl-transforms:transform-pose
+             (cl-transforms:pose->transform pose) geometry-pose)
       :shape-type :box
       :dimensions (cl-urdf:size box)))
   
-  (:method (name pose type (cylinder cl-urdf:cylinder))
+  (:method (name pose type (cylinder cl-urdf:cylinder)
+            &optional (geometry-pose (cl-transforms:make-identity-pose)))
     (make-instance 'gazebo-designator-shape-data
       :object-identifier name
       :type type
-      :pose pose
+      :pose (cl-transforms:transform-pose
+             (cl-transforms:pose->transform pose) geometry-pose)
       :shape-type :cylinder
       :dimensions (cl-transforms:make-3d-vector
                    (cl-urdf:length cylinder)
                    (cl-urdf:radius cylinder)
                    (cl-urdf:radius cylinder))))
 
-  (:method (name pose type (sphere cl-urdf:sphere))
+  (:method (name pose type (sphere cl-urdf:sphere)
+            &optional (geometry-pose (cl-transforms:make-identity-pose)))
     (make-instance 'gazebo-designator-shape-data
       :object-identifier name
       :type type
-      :pose pose
+      :pose (cl-transforms:transform-pose
+             (cl-transforms:pose->transform pose) geometry-pose)
       :shape-type :sphere
       :dimensions (cl-transforms:make-3d-vector
                    (cl-urdf:radius sphere)

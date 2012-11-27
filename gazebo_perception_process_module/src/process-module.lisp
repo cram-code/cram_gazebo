@@ -86,7 +86,8 @@ given, all known objects from the knowledge base are returned."
               (when model-pose
                 (geometry->designator-data
                  name model-pose object-type
-                 (get-object-geometry filename)))))
+                 (get-object-geometry filename)
+                 (get-object-geometry-pose filename)))))
           (force-ll (lazy-mapcar (lambda (bindings)
                                    (var-value '?object bindings))
                                  (crs:prolog `(and
