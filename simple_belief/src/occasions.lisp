@@ -27,6 +27,11 @@
 
 (in-package :simple-belief)
 
+(defvar *attached-objects* nil)
+
+(defmethod cram-plan-knowledge:clear-belief simple-belief ()
+  (setf *attached-objects* nil))
+
 (defmethod cram-plan-knowledge:holds (occasion &optional time-specification)
   (if time-specification
       (prolog `(holds ?_ ,occasion ,time-specification))
