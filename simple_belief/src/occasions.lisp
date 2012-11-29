@@ -55,13 +55,12 @@
 ;; NOTE(winkler): This function has to be implemented. Using this, the
 ;; predicate `looking-at' will determine whether the robot's PTU is
 ;; actually facing the point given as `loc'.
-(defun robot-looking-at (loc)
-  (let ((target-pose-stamped (desig:reference loc))
-	(head-pointing-at-pose-stamped nil))
+(defun robot-looking-at (pose-stamped)
+  (let ((head-pointing-at-pose-stamped nil))
     ;; NOTE(winkler): Returning `nil' always, so that the PTU will be
-    ;; panned and tilted towards the target pose `target-pose-stamped'
-    ;; in any case. The current pointing angles of the PTU have to be
-    ;; read, though.
+    ;; panned and tilted towards the target pose `pose-stamped' in any
+    ;; case. The current pointing angles of the PTU have to be read,
+    ;; though.
     ))
 
 (def-fact-group occasions (holds)

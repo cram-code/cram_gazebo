@@ -90,13 +90,12 @@ given, all known objects from the knowledge base are returned."
                  (get-object-geometry-pose filename)))))
           (force-ll (lazy-mapcar (lambda (bindings)
                                    (var-value '?object bindings))
-                                 (crs:prolog `(and
-                                               (simple-knowledge::gazebo-object
-                                                ?object
-                                                ,(cond (object-name object-name)
-                                                       (t '?name))
-                                                ,(cond (object-type object-type)
-                                                       (t '?type)))))))))
+                                 (crs:prolog `(simple-knowledge:gazebo-object
+                                               ?object
+                                               ,(cond (object-name object-name)
+                                                      (t '?name))
+                                               ,(cond (object-type object-type)
+                                                      (t '?type))))))))
 
 (defun perceived-object->designator (designator perceived-object)
   (make-effective-designator

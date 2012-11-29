@@ -42,7 +42,7 @@
                                 :pose (cram-designators:obj-desig-location
                                        (cram-designators:current-desig obj))
                                 :target-frame target-frame)))
-         (z-offset 0)
+         (z-offset 0.1)
          (loc-desig-in-gripper (cram-designators:make-designator
                                 'cram-designators:location
                                 (append `((pose ,obj-pose-in-gripper)
