@@ -27,34 +27,9 @@
 
 (in-package :simple-belief)
 
-(defun update-grasped-object-designator (obj grippers &key new-properties)
-  (let* ((target-frame (var-value '?target-frame
-                                  (lazy-car
-                                   (crs:prolog
-                                    `(cram-pr2-knowledge::end-effector-link
-                                      ,(car grippers)
-                                      ?target-frame)))))
-         (obj-pose-in-gripper (tf:pose->pose-stamped
-                               target-frame
-                               0.0
-                               (cl-tf:transform-pose
-                                *tf*
-                                :pose (cram-designators:obj-desig-location
-                                       (cram-designators:current-desig obj))
-                                :target-frame target-frame)))
-         (z-offset 0.1)
-         (loc-desig-in-gripper (cram-designators:make-designator
-                                'cram-designators:location
-                                (append `((pose ,obj-pose-in-gripper)
-                                          (in gripper)
-                                          (height ,z-offset))
-                                        (mapcar (lambda (grip)
-                                                  `(gripper ,grip))
-                                                grippers)))))
-    (cram-designators:make-designator
-     'object
-     (append `((at ,loc-desig-in-gripper) .
-               ,(remove 'at (cram-designators:description obj)
-                        :key #'car))
-             new-properties)
-     obj)))
+(defun update-grasped-object-designator (obj loc &key new-properties)
+  (cram-designators:make-designator
+   'object
+   (append `((at ,loc) .
+             ,(remove 'at (cram-designators:description obj) :key #'car))
+           new-properties)obj))

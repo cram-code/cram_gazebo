@@ -29,14 +29,77 @@
 
 (defmethod on-event attach-objects ((event object-attached))
   (format t "Attach object to gripper ~a.~%" (event-side event))
-  (update-grasped-object-designator (event-object event)
-                                    (list (event-side event)))
-  (push (cons (event-object event) (event-side event)) *attached-objects*))
+  (let* ((current-event-object (desig:current-desig (event-object event)))
+         (attached-obj (find current-event-object *attached-objects*)))
+    (cond ((eq attached-obj nil)
+           (let*((target-frame (var-value '?target-frame
+                                          (lazy-car
+                                           (crs:prolog
+                                            `(cram-pr2-knowledge::end-effector-link
+                                              ,(event-side event)
+                                              ?target-frame)))))
+                 (obj-pose-in-gripper (tf:pose->pose-stamped
+                                       target-frame
+                                       0.0
+                                       (cl-tf:transform-pose
+                                        *tf*
+                                        :pose (cram-designators:obj-desig-location
+                                               (cram-designators:current-desig (event-object event)))
+                                        :target-frame target-frame)))
+                 (z-offset 0)
+                 (loc-desig-in-gripper (cram-designators:make-designator
+                                        'cram-designators:location
+                                        (append `((pose ,obj-pose-in-gripper)
+                                                  (gripper ,(event-side event))
+                                                  (height ,z-offset)))))
+                 (new-desig (update-grasped-object-designator current-event-object
+                                                              loc-desig-in-gripper)))  
+             (push (event-object event) *attached-objects*))
+           ;;(desig:equate current-event-object new-desig))) 
+           (let* ((r-target-frame (var-value '?target-frame
+                                             (lazy-car
+                                              (crs:prolog
+                                               `(cram-pr2-knowledge::end-effector-link
+                                                 ,:right
+                                                 ?target-frame)))))
+                  (obj-pose-in-r-gripper (tf:pose->pose-stamped
+                                          r-target-frame
+                                          0.0
+                                          (cl-tf:transform-pose
+                                           *tf*
+                                           :pose (cram-designators:obj-desig-location
+                                                  (cram-designators:current-desig (event-object event)))
+                                             :target-frame r-target-frame)))
+                  (l-target-frame (var-value '?target-frame
+                                             (lazy-car
+                                              (crs:prolog
+                                               `(cram-pr2-knowledge::end-effector-link
+                                                 ,:left
+                                                 ?target-frame)))))
+                  (obj-pose-in-l-gripper (tf:pose->pose-stamped
+                                          l-target-frame
+                                          0.0
+                                          (cl-tf:transform-pose
+                                           *tf*
+                                           :pose (cram-designators:obj-desig-location
+                                                  (cram-designators:current-desig (event-object event)))
+                                           :target-frame l-target-frame)))
+                  (z-offset 0)
+                  (loc-desig-in-gripper (cram-designators:make-designator
+                                         'cram-designators:location
+                                         (append `((pose ,obj-pose-in-r-gripper)
+                                                   (gripper ,:right)
+                                                   (pose, obj-pose-in-l-gripper)
+                                                   (gripper ,:left)
+                                                   (height ,z-offset))))))
+             (update-grasped-object-designator current-event-object
+                                               loc-desig-in-gripper)
+       (push (event-object event) *attached-objects*))))))
 
 (defmethod on-event detach-objects ((event object-detached))
   (format t "Detach object from gripper ~a.~%" (event-side event))
   (setf *attached-objects* 
-        (remove (cons (event-object event) (event-side event)) *attached-objects* 
-                :test (lambda (a b) 
+        (remove (event-object event) *attached-objects*
+                :test (lambda (a b)
                         (equal (car a)(car b))
-                        (equal (cdr a) (cdr b))))))
+                        (equal (cdr a)(cdr b))))))
