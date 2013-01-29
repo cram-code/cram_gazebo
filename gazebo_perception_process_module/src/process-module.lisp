@@ -40,20 +40,28 @@
 properties of `perceived-object'")
   (:method ((old-desig object-designator)
             (perceived-object object-designator-data))
-    (let ((obj-loc-desig (make-designator 'location
-                                          `((pose ,(object-pose perceived-object))))))
-      (with-vars-strictly-bound (?handles)
-          (lazy-car (prolog `(and (simple-knowledge:gazebo-object ?_ ?name ?_)
-                                  (simple-knowledge:object-handles ?name ?handles))
-                            `(,@(when (object-identifier perceived-object)
-                                  `((?name . ,(object-identifier perceived-object)))))))
+    (let ((obj-loc-desig (make-designator
+                          'location
+                          `((pose ,(object-pose perceived-object))))))
+      (with-vars-strictly-bound (?handles ?min-handles)
+          (lazy-car
+           (prolog `(and (simple-knowledge:gazebo-object ?_ ?name ?_)
+                         (simple-knowledge:object-handles
+                          ?name ?handles)
+                         (simple-knowledge:object-min-handles
+                          ?name ?min-handles))
+                   `(,@(when (object-identifier perceived-object)
+                         `((?name . ,(object-identifier perceived-object)))))))
         `((at ,obj-loc-desig) (type ,(object-type perceived-object))
           ,@(unless (member 'name (description old-desig) :key #'car)
               `((name ,(object-identifier perceived-object))))
+          ,@(when ?min-handles
+              (unless (member 'min-handles (description old-desig) :key #'car)
+                `((min-handles ,?min-handles))))
           ,@(when ?handles
               (make-handle-designator-sequence ?handles))
           ,@(remove-if (lambda (element)
-                         (member element '(at type)))
+                         (member element '(at type handle)))
                        (description old-desig) :key #'car))))))
 
 (defun make-handle-designator-sequence (handles)
