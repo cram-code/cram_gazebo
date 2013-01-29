@@ -55,4 +55,3 @@
   (<- (object-filename ?name ?filename)
     (gazebo-object ?object ?name ?_)
     (get-slot-value ?object filename ?filename)))
-
