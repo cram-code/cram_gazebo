@@ -35,34 +35,43 @@
   (cl-transforms:v-dist (cl-transforms:origin (designator-pose designator-1))
                         (cl-transforms:origin (designator-pose designator-2))))
 
-(defgeneric make-new-desig-description (old-desig perceived-object)
+(defgeneric make-new-desig-description (old-desig perceived-object &key use-simple-knowledge)
   (:documentation "Merges the description of `old-desig' with the
-properties of `perceived-object'")
+properties of `perceived-object'.")
   (:method ((old-desig object-designator)
-            (perceived-object object-designator-data))
+            (perceived-object object-designator-data)
+            &key use-simple-knowledge)
     (let ((obj-loc-desig (make-designator
                           'location
                           `((pose ,(object-pose perceived-object))))))
-      (with-vars-strictly-bound (?handles ?min-handles)
-          (lazy-car
-           (prolog `(and (simple-knowledge:gazebo-object ?_ ?name ?_)
-                         (simple-knowledge:object-handles
-                          ?name ?handles)
-                         (simple-knowledge:object-min-handles
-                          ?name ?min-handles))
-                   `(,@(when (object-identifier perceived-object)
-                         `((?name . ,(object-identifier perceived-object)))))))
-        `((at ,obj-loc-desig) (type ,(object-type perceived-object))
-          ,@(unless (member 'name (description old-desig) :key #'car)
-              `((name ,(object-identifier perceived-object))))
-          ,@(when ?min-handles
-              (unless (member 'min-handles (description old-desig) :key #'car)
-                `((min-handles ,?min-handles))))
-          ,@(when ?handles
-              (make-handle-designator-sequence ?handles))
-          ,@(remove-if (lambda (element)
-                         (member element '(at type handle)))
-                       (description old-desig) :key #'car))))))
+      (cond (use-simple-knowledge
+             (with-vars-strictly-bound (?handles ?min-handles)
+                 (lazy-car
+                  (prolog `(and (simple-knowledge:gazebo-object ?_ ?name ?_)
+                                (simple-knowledge:object-handles
+                                 ?name ?handles)
+                                (simple-knowledge:object-min-handles
+                                 ?name ?min-handles))
+                          `(,@(when (object-identifier perceived-object)
+                                `((?name . ,(object-identifier
+                                             perceived-object)))))))
+               `((at ,obj-loc-desig) (type ,(object-type perceived-object))
+                 ,@(unless (member 'name (description old-desig) :key #'car)
+                     `((name ,(object-identifier perceived-object))))
+                 ,@(when ?min-handles
+                     (unless (member 'min-handles (description old-desig)
+                                     :key #'car)
+                       `((min-handles ,?min-handles))))
+                 ,@(when ?handles
+                     (make-handle-designator-sequence ?handles))
+                 ,@(remove-if (lambda (element)
+                                (member element '(at type handle)))
+                              (description old-desig) :key #'car))))
+            (t
+             `((desig-props:at ,obj-loc-desig)
+               ,@(remove-if (lambda (element)
+                              (member element '(at type handle)))
+                            (description old-desig) :key #'car)))))))
 
 (defun make-handle-designator-sequence (handles)
   "Converts the sequence `handles' (handle-pose handle-radius) into a
@@ -80,30 +89,39 @@ purposes."
                                     (type handle))))))
           handles))
 
-(defun find-object (&key object-name object-type)
+(defun find-object (&key object-name object-type use-simple-knowledge)
   "Finds objects based on either their name `object-name' or their
 type `object-type', depending what is given. An invalid combination of
 both parameters will result in an empty list. When no parameters are
 given, all known objects from the knowledge base are returned."
-  (mapcar (lambda (object)
-            (let* ((name (simple-knowledge:object-name object))
-                   (filename (simple-knowledge:filename object))
-                   (object-type (simple-knowledge:object-type object))
-                   (model-pose (cram-gazebo-utilities:get-model-pose
-                                name :test #'object-names-equal)))
-              (when model-pose
-                (geometry->designator-data
-                 name model-pose object-type
-                 (get-object-geometry filename)
-                 (get-object-geometry-pose filename)))))
-          (force-ll (lazy-mapcar (lambda (bindings)
-                                   (var-value '?object bindings))
-                                 (crs:prolog `(simple-knowledge:gazebo-object
-                                               ?object
-                                               ,(cond (object-name object-name)
-                                                      (t '?name))
-                                               ,(cond (object-type object-type)
-                                                      (t '?type))))))))
+  (cond (use-simple-knowledge
+         (mapcar (lambda (object)
+                   (let* ((name (simple-knowledge:object-name object))
+                          (filename (simple-knowledge:filename object))
+                          (object-type (simple-knowledge:object-type object))
+                          (model-pose (cram-gazebo-utilities:get-model-pose
+                                       name :test #'object-names-equal)))
+                     (when model-pose
+                       (geometry->designator-data
+                        name model-pose object-type
+                        (get-object-geometry filename)
+                        (get-object-geometry-pose filename)))))
+                 (force-ll (lazy-mapcar (lambda (bindings)
+                                          (var-value '?object bindings))
+                                        (crs:prolog
+                                         `(simple-knowledge:gazebo-object
+                                           ?object
+                                           ,(cond (object-name object-name)
+                                                  (t '?name))
+                                           ,(cond (object-type object-type)
+                                                  (t '?type))))))))
+        (t
+         (let* ((model-pose (cram-gazebo-utilities:get-model-pose
+                             object-name :test #'object-names-equal)))
+           (when model-pose
+             (list (make-instance 'gazebo-designator-shape-data
+                                  :object-identifier object-name
+                                  :pose model-pose)))))))
 
 (defun perceived-object->designator (designator perceived-object)
   (make-effective-designator
