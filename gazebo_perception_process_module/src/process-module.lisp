@@ -69,8 +69,11 @@ properties of `perceived-object'.")
                               (description old-desig) :key #'car))))
             (t
              `((desig-props:at ,obj-loc-desig)
+               (desig-props:name ,(intern (string-upcase
+                                           (desig-prop-value
+                                            old-desig 'desig-props:name))))
                ,@(remove-if (lambda (element)
-                              (member element '(at type handle)))
+                              (member element '(at type name)))
                             (description old-desig) :key #'car)))))))
 
 (defun make-handle-designator-sequence (handles)
@@ -116,18 +119,34 @@ given, all known objects from the knowledge base are returned."
                                            ,(cond (object-type object-type)
                                                   (t '?type))))))))
         (t
-         (let* ((model-pose (cram-gazebo-utilities:get-model-pose
+         (let* ((obj-symbol (intern (string-upcase object-name)))
+                (model-pose (cram-gazebo-utilities:get-model-pose
                              object-name :test #'object-names-equal)))
            (when model-pose
+             (crs:prolog `(and
+                           (btr:bullet-world ?w)
+                           (btr:assert
+                            (btr:object
+                             ?w btr:box ,obj-symbol
+                             ((,(tf:x (tf:origin model-pose))
+                                ,(tf:y (tf:origin model-pose))
+                                ,(tf:z (tf:origin model-pose)))
+                              (,(tf:x (tf:orientation model-pose))
+                                ,(tf:y (tf:orientation model-pose))
+                                ,(tf:z (tf:orientation model-pose))
+                                ,(tf:w (tf:orientation model-pose))))
+                             :size (0.1 0.1 0.1)
+                             :mass 0.0))))
              (list (make-instance 'gazebo-designator-shape-data
-                                  :object-identifier object-name
+                                  :object-identifier obj-symbol
                                   :pose model-pose)))))))
 
 (defun perceived-object->designator (designator perceived-object)
-  (make-effective-designator
-   designator
-   :new-properties (make-new-desig-description designator perceived-object)
-   :data-object perceived-object))
+  (equate designator (make-effective-designator
+                      designator
+                      :new-properties (make-new-desig-description
+                                       designator perceived-object)
+                      :data-object perceived-object)))
 
 (defun find-with-designator (designator)
   ;; TODO(moesenle): add verification of location using the AT
