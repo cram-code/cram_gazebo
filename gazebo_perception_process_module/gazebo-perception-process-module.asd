@@ -46,7 +46,8 @@
                gazebo_msgs-msg
                gazebo_msgs-srv
                simple-knowledge
-               cl-urdf)
+               cl-urdf
+               bullet-reasoning)
   :components
   ((:module "src"
     :components

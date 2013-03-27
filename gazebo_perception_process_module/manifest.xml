@@ -23,5 +23,6 @@
   <depend package="cram_physics_utils" />
   <depend package="simple_knowledge" />
   <depend package="cl_urdf" />
+  <depend package="bullet_reasoning" />
 
 </package>
