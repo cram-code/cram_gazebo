@@ -38,8 +38,6 @@
                cram-plan-knowledge
                designators
                designators-ros
-               cljlo
-               cljlo-utils
                actionlib
                semantic-map-cache
                vision_msgs-msg
