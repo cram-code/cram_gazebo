@@ -40,10 +40,11 @@
                designators-ros
                actionlib
                semantic-map-cache
-               vision_msgs-msg
-               vision_srvs-srv
+               ;; vision_msgs-msg
+               ;; vision_srvs-srv
                std_msgs-msg
                pr2_msgs-msg
+	       trajectory_msgs-msg
                cram-plan-failures
                gazebo_msgs-msg
                gazebo_msgs-srv

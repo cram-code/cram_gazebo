@@ -42,7 +42,7 @@ about the current state of all models in the simulated world."
          "gazebo_msgs/ModelStates"
          #'model-state-callback)))
 
-(cram-roslisp-common:register-ros-init-function init-cram-gazebo-utilities)
+(roslisp-utilities:register-ros-init-function init-cram-gazebo-utilities)
 
 (defun model-state-callback (msg)
   "This is the callback for the gazebo topic subscriber subscribed on
