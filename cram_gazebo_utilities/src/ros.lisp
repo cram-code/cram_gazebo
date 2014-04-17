@@ -60,7 +60,7 @@ gazebo. The pose is given in the `map' frame."
       (with-fields ((name-sequence name)
                     (pose-sequence pose))
           model-state-msg
-        (let ((model-name-index (position name name-sequence :test test)))
+        (let ((model-name-index (position (string-downcase name) name-sequence :test test)))
           (when model-name-index
             (tf:pose->pose-stamped
              "map" 0.0
