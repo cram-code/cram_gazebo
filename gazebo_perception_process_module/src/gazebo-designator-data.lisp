@@ -97,7 +97,7 @@ element (:VISUAL) or the collision element (:COLLISION)."
   (:method (name pose type (mesh cl-urdf:mesh)
             &optional (geometry-pose (cl-transforms:make-identity-pose)))
     (let ((mesh (physics-utils:transform-3d-model
-                 (cl-urdf:3d-model mesh) geometry-pose)))
+                 (physics-utils:3d-model mesh) geometry-pose)))
       (make-instance 'gazebo-designator-mesh-data
         :object-identifier name
         :type type
