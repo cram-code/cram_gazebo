@@ -166,7 +166,7 @@ given, all known objects from the knowledge base are returned."
 
 (def-process-module gazebo-perception-process-module (input)
   (assert (typep input 'action-designator))
-  (let ((object-designator (reference input)))
+  (let ((object-designator (desig-prop-value input 'desig-props::obj)))
     (ros-info (gazebo-perception-process-module process-module)
               "Searching for object ~a" object-designator)
     (let ((result (find-with-designator object-designator)))
