@@ -45,7 +45,8 @@
                physics-utils
                cl-urdf
                bullet-reasoning
-               cram-task-knowledge)
+               cram-task-knowledge
+               cram-gazebo-utilities)
   :components
   ((:module "src"
     :components
