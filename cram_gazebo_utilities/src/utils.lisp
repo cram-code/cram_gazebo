@@ -43,6 +43,11 @@
                 :initial_pose (tf:pose->msg pose)
                 :reference_frame (tf:frame-id pose)))
 
+(defun delete-gazebo-model (name)
+  (call-service "gazebo/delete_model"
+                'gazebo_msgs-srv:deletemodel
+                :model_name name))
+
 (defun file-string (path)
   (with-open-file (s path)
     (let* ((len (file-length s))

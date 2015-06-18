@@ -149,8 +149,6 @@ given, all known objects from the knowledge base are returned."
                       :data-object perceived-object)))
 
 (defun find-with-designator (designator)
-  ;; TODO(moesenle): add verification of location using the AT
-  ;; property.
   (with-desig-props (name type) designator
     (mapcar (lambda (perceived-object)
                 (perceived-object->designator
