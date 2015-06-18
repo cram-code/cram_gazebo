@@ -43,17 +43,17 @@
                cram-projection
                cram-manipulation-knowledge
                physics-utils
-               gazebo_msgs-msg
-               gazebo_msgs-srv
-               simple-knowledge
                cl-urdf
-               bullet-reasoning)
+               bullet-reasoning
+               cram-task-knowledge
+               cram-gazebo-utilities)
   :components
   ((:module "src"
     :components
     ((:file "package")
-     (:file "utilities" :depends-on ("package"))
-     (:file "designator" :depends-on ("package" "utilities"))
+     (:file "designator" :depends-on ("package"))
      (:file "gazebo-designator-data" :depends-on ("package"))
      (:file "process-module"
-      :depends-on ("package" "utilities" "designator" "gazebo-designator-data"))))))
+      :depends-on ("package"
+                   "designator"
+                   "gazebo-designator-data"))))))

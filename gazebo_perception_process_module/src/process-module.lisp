@@ -35,46 +35,21 @@
   (cl-transforms:v-dist (cl-transforms:origin (designator-pose designator-1))
                         (cl-transforms:origin (designator-pose designator-2))))
 
-(defgeneric make-new-desig-description (old-desig perceived-object &key use-simple-knowledge)
+(defgeneric make-new-desig-description (old-desig perceived-object)
   (:documentation "Merges the description of `old-desig' with the
 properties of `perceived-object'.")
   (:method ((old-desig object-designator)
-            (perceived-object object-designator-data)
-            &key use-simple-knowledge)
+            (perceived-object object-designator-data))
     (let ((obj-loc-desig (make-designator
                           'location
                           `((pose ,(object-pose perceived-object))))))
-      (cond (use-simple-knowledge
-             (with-vars-strictly-bound (?handles ?min-handles)
-                 (lazy-car
-                  (prolog `(and (simple-knowledge:gazebo-object ?_ ?name ?_)
-                                (simple-knowledge:object-handles
-                                 ?name ?handles)
-                                (simple-knowledge:object-min-handles
-                                 ?name ?min-handles))
-                          `(,@(when (object-identifier perceived-object)
-                                `((?name . ,(object-identifier
-                                             perceived-object)))))))
-               `((at ,obj-loc-desig) (type ,(object-type perceived-object))
-                 ,@(unless (member 'name (description old-desig) :key #'car)
-                     `((name ,(object-identifier perceived-object))))
-                 ,@(when ?min-handles
-                     (unless (member 'min-handles (description old-desig)
-                                     :key #'car)
-                       `((min-handles ,?min-handles))))
-                 ,@(when ?handles
-                     (make-handle-designator-sequence ?handles))
-                 ,@(remove-if (lambda (element)
-                                (member element '(at type handle)))
-                              (description old-desig) :key #'car))))
-            (t
-             `((desig-props:at ,obj-loc-desig)
-               (desig-props:name ,(intern (string-upcase
-                                           (desig-prop-value
-                                            old-desig 'desig-props:name))))
-               ,@(remove-if (lambda (element)
-                              (member element '(at type name)))
-                            (description old-desig) :key #'car)))))))
+      `((desig-props:at ,obj-loc-desig)
+        (desig-props:name ,(intern (string-upcase
+                                    (desig-prop-value
+                                     old-desig 'desig-props:name))))
+        ,@(remove-if (lambda (element)
+                       (member element '(at type name)))
+                     (description old-desig) :key #'car)))))
 
 (defun make-handle-designator-sequence (handles)
   "Converts the sequence `handles' (handle-pose handle-radius) into a
@@ -92,54 +67,27 @@ purposes."
                                     (type handle))))))
           handles))
 
-(defun find-object (&key object-name object-type use-simple-knowledge)
+(defun find-object (&key object-name object-type)
   "Finds objects based on either their name `object-name' or their
 type `object-type', depending what is given. An invalid combination of
 both parameters will result in an empty list. When no parameters are
 given, all known objects from the knowledge base are returned."
-  (cond (use-simple-knowledge
-         (mapcar (lambda (object)
-                   (let* ((name (simple-knowledge:object-name object))
-                          (filename (simple-knowledge:filename object))
-                          (object-type (simple-knowledge:object-type object))
-                          (model-pose (cram-gazebo-utilities:get-model-pose
-                                       name :test #'object-names-equal)))
-                     (when model-pose
-                       (geometry->designator-data
-                        name model-pose object-type
-                        (get-object-geometry filename)
-                        (get-object-geometry-pose filename)))))
-                 (force-ll (lazy-mapcar (lambda (bindings)
-                                          (var-value '?object bindings))
-                                        (crs:prolog
-                                         `(simple-knowledge:gazebo-object
-                                           ?object
-                                           ,(cond (object-name object-name)
-                                                  (t '?name))
-                                           ,(cond (object-type object-type)
-                                                  (t '?type))))))))
-        (t
+  (cond (object-name
          (let* ((obj-symbol (intern (string-upcase object-name)))
                 (model-pose (cram-gazebo-utilities:get-model-pose
-                             object-name :test #'object-names-equal)))
+                             object-name)))
            (when model-pose
-             (crs:prolog `(and
-                           (btr:bullet-world ?w)
-                           (btr:assert
-                            (btr:object
-                             ?w btr:box ,obj-symbol
-                             ((,(tf:x (tf:origin model-pose))
-                                ,(tf:y (tf:origin model-pose))
-                                ,(tf:z (tf:origin model-pose)))
-                              (,(tf:x (tf:orientation model-pose))
-                                ,(tf:y (tf:orientation model-pose))
-                                ,(tf:z (tf:orientation model-pose))
-                                ,(tf:w (tf:orientation model-pose))))
-                             :size (0.1 0.1 0.1)
-                             :mass 0.0))))
              (list (make-instance 'gazebo-designator-shape-data
                                   :object-identifier obj-symbol
-                                  :pose model-pose)))))))
+                                  :pose model-pose)))))
+        (t
+         (mapcar (lambda (model-data)
+                   (destructuring-bind (model-name . model-pose)
+                       model-data
+                     (make-instance 'gazebo-designator-shape-data
+                                    :object-identifier model-name
+                                    :pose model-pose)))
+                 (cram-gazebo-utilities:get-models)))))
 
 (defun perceived-object->designator (designator perceived-object)
   (equate designator (make-effective-designator
@@ -155,22 +103,10 @@ given, all known objects from the knowledge base are returned."
                  designator perceived-object))
             (find-object :object-name name :object-type type))))
 
-(defun emit-perception-event (designator)
-  (cram-plan-knowledge:on-event (make-instance
-                                 'cram-plan-knowledge:object-perceived-event
-                                 :perception-source :gazebo-perception-process-module
-                                 :object-designator designator))
-  designator)
-
 (def-process-module gazebo-perception-process-module (input)
   (assert (typep input 'action-designator))
   (let ((object-designator (desig-prop-value input 'desig-props::obj)))
-    (ros-info (gazebo-perception-process-module process-module)
+    (ros-info (gazebo perception-process-module)
               "Searching for object ~a" object-designator)
-    (let ((result (find-with-designator object-designator)))
-      (unless result
-        (fail 'object-not-found :object-desig input))
-      (ros-info (gazebo-perception-process-module process-module)
-                "Found objects: ~a" result)
-      (map 'nil #'emit-perception-event result)
-      result)))
+    (cram-task-knowledge:filter-perceived-objects
+     (find-with-designator object-designator))))
