@@ -43,8 +43,6 @@
                cram-projection
                cram-manipulation-knowledge
                physics-utils
-               gazebo_msgs-msg
-               gazebo_msgs-srv
                simple-knowledge
                cl-urdf
                bullet-reasoning)
