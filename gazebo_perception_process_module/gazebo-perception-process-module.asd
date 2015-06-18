@@ -43,7 +43,6 @@
                cram-projection
                cram-manipulation-knowledge
                physics-utils
-               simple-knowledge
                cl-urdf
                bullet-reasoning
                cram-task-knowledge)
@@ -51,8 +50,9 @@
   ((:module "src"
     :components
     ((:file "package")
-     (:file "utilities" :depends-on ("package"))
-     (:file "designator" :depends-on ("package" "utilities"))
+     (:file "designator" :depends-on ("package"))
      (:file "gazebo-designator-data" :depends-on ("package"))
      (:file "process-module"
-      :depends-on ("package" "utilities" "designator" "gazebo-designator-data"))))))
+      :depends-on ("package"
+                   "designator"
+                   "gazebo-designator-data"))))))
