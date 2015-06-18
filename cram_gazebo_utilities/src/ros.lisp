@@ -29,8 +29,8 @@
 (in-package :cram-gazebo-utilities)
 
 (defvar *gazebo-modelstates-subscriber* nil)
-(defvar *model-state-msg* (cram-language:make-fluent :name :model-state-msg
-                                                     :allow-tracing nil))
+(defvar *known-models* (make-hash-table :test 'equal))
+(defvar *models-lock* (make-lock :name "Known Gazebo models"))
 
 (defun init-cram-gazebo-utilities ()
   "Initialize the cram gazebo utilities. At the moment,
@@ -45,24 +45,26 @@ about the current state of all models in the simulated world."
 (roslisp-utilities:register-ros-init-function init-cram-gazebo-utilities)
 
 (defun model-state-callback (msg)
-  "This is the callback for the gazebo topic subscriber subscribed on
-`/gazebo/model_states'. It takes message `msg' with the format
-`gazebo_msgs/ModelStates' as a parameter."
-  (setf (cram-language:value *model-state-msg*) msg)
-  (cram-language:pulse *model-state-msg*))
+  "This is the callback for the gazebo topic subscriber subscribed to `/gazebo/model_states'. It takes message `msg' with the format `gazebo_msgs/ModelStates' as a parameter."
+  (with-lock-held (*models-lock*)
+    (clrhash *known-models*)
+    (with-fields ((names name)
+                  (poses pose))
+        msg
+      (map 'nil (lambda (model-name model-pose-msg)
+                  (setf (gethash model-name *known-models*)
+                        (tf:pose->pose-stamped
+                         "map" 0.0
+                         (tf:msg->pose model-pose-msg))))
+           names poses))))
 
-(defun get-model-pose (name &key (test #'equal))
-  "Return the current pose of a model with the name `name' spawned in
-gazebo. The pose is given in the `map' frame."
-  (cram-language:wait-for (cram-language:pulsed *model-state-msg*))
-  (let ((model-state-msg (cram-language:value *model-state-msg*)))
-    (when model-state-msg
-      (with-fields ((name-sequence name)
-                    (pose-sequence pose))
-          model-state-msg
-        (let ((model-name-index (position (string-downcase name) name-sequence :test test)))
-          (when model-name-index
-            (tf:pose->pose-stamped
-             "map" 0.0
-             (tf:msg->pose
-              (elt pose-sequence model-name-index)))))))))
+(defun get-model-pose (name)
+  "Return the current pose of a model with the name `name' spawned in Gazebo. The pose is given in the `map' frame."
+  (with-lock-held (*models-lock*)
+    (gethash name *known-models*)))
+
+(defun get-models ()
+  "Returns a list of cons elements containing `(model-name . model-pose)' of all currently known models in Gazebo."
+  (with-lock-held (*models-lock*)
+    (loop for hash-key being the hash-keys of *known-models*
+          collect (cons hash-key (gethash hash-key *known-models*)))))
