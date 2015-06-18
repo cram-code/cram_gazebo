@@ -45,7 +45,8 @@
                physics-utils
                simple-knowledge
                cl-urdf
-               bullet-reasoning)
+               bullet-reasoning
+               cram-task-knowledge)
   :components
   ((:module "src"
     :components

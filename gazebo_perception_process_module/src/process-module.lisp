@@ -123,20 +123,6 @@ given, all known objects from the knowledge base are returned."
                 (model-pose (cram-gazebo-utilities:get-model-pose
                              object-name :test #'object-names-equal)))
            (when model-pose
-             (crs:prolog `(and
-                           (btr:bullet-world ?w)
-                           (btr:assert
-                            (btr:object
-                             ?w btr:box ,obj-symbol
-                             ((,(tf:x (tf:origin model-pose))
-                                ,(tf:y (tf:origin model-pose))
-                                ,(tf:z (tf:origin model-pose)))
-                              (,(tf:x (tf:orientation model-pose))
-                                ,(tf:y (tf:orientation model-pose))
-                                ,(tf:z (tf:orientation model-pose))
-                                ,(tf:w (tf:orientation model-pose))))
-                             :size (0.1 0.1 0.1)
-                             :mass 0.0))))
              (list (make-instance 'gazebo-designator-shape-data
                                   :object-identifier obj-symbol
                                   :pose model-pose)))))))
@@ -149,30 +135,16 @@ given, all known objects from the knowledge base are returned."
                       :data-object perceived-object)))
 
 (defun find-with-designator (designator)
-  ;; TODO(moesenle): add verification of location using the AT
-  ;; property.
   (with-desig-props (name type) designator
     (mapcar (lambda (perceived-object)
                 (perceived-object->designator
                  designator perceived-object))
             (find-object :object-name name :object-type type))))
 
-(defun emit-perception-event (designator)
-  (cram-plan-knowledge:on-event (make-instance
-                                 'cram-plan-knowledge:object-perceived-event
-                                 :perception-source :gazebo-perception-process-module
-                                 :object-designator designator))
-  designator)
-
 (def-process-module gazebo-perception-process-module (input)
   (assert (typep input 'action-designator))
   (let ((object-designator (desig-prop-value input 'desig-props::obj)))
-    (ros-info (gazebo-perception-process-module process-module)
+    (ros-info (gazebo perception-process-module)
               "Searching for object ~a" object-designator)
-    (let ((result (find-with-designator object-designator)))
-      (unless result
-        (fail 'object-not-found :object-desig input))
-      (ros-info (gazebo-perception-process-module process-module)
-                "Found objects: ~a" result)
-      (map 'nil #'emit-perception-event result)
-      result)))
+    (cram-task-knowledge:filter-perceived-objects
+     (find-with-designator object-designator))))
