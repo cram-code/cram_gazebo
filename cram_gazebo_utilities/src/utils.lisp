@@ -55,3 +55,6 @@
      (multiple-value-bind (string length) (values data (read-sequence data s))
         (declare (ignore length))
         string))))
+
+(defun gazebo-present ()
+  (roslisp:wait-for-service "gazebo/spawn_urdf_model" 0.25))

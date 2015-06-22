@@ -47,4 +47,4 @@
   (:export init-cram-gazebo-utilities
            get-model-pose set-model-state
            spawn-gazebo-model object-in-world?
-           get-models))
+           get-models gazebo-present))
