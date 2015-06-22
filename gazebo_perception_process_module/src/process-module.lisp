@@ -42,11 +42,13 @@ properties of `perceived-object'.")
             (perceived-object object-designator-data))
     (let ((obj-loc-desig (make-designator
                           'location
-                          `((pose ,(object-pose perceived-object))))))
+                          `((pose ,(object-pose perceived-object)))))
+          (object-name (or (when (desig-prop-value old-desig 'desig-props:name)
+                             (intern (string-upcase (desig-prop-value
+                                                     old-desig 'desig-props:name))))
+                           (object-identifier perceived-object))))
       `((desig-props:at ,obj-loc-desig)
-        (desig-props:name ,(intern (string-upcase
-                                    (desig-prop-value
-                                     old-desig 'desig-props:name))))
+        (desig-props:name ,object-name)
         ,@(remove-if (lambda (element)
                        (member element '(at type name)))
                      (description old-desig) :key #'car)))))
@@ -67,7 +69,7 @@ purposes."
                                     (type handle))))))
           handles))
 
-(defun find-object (&key object-name object-type)
+(defun find-object (&key object-name)
   "Finds objects based on either their name `object-name' or their
 type `object-type', depending what is given. An invalid combination of
 both parameters will result in an empty list. When no parameters are
@@ -90,18 +92,18 @@ given, all known objects from the knowledge base are returned."
                  (cram-gazebo-utilities:get-models)))))
 
 (defun perceived-object->designator (designator perceived-object)
-  (equate designator (make-effective-designator
-                      designator
-                      :new-properties (make-new-desig-description
-                                       designator perceived-object)
-                      :data-object perceived-object)))
+  (make-effective-designator
+   designator
+   :new-properties (make-new-desig-description
+                    designator perceived-object)
+   :data-object perceived-object))
 
 (defun find-with-designator (designator)
-  (with-desig-props (name type) designator
+  (with-desig-props (name) designator
     (mapcar (lambda (perceived-object)
                 (perceived-object->designator
                  designator perceived-object))
-            (find-object :object-name name :object-type type))))
+            (find-object :object-name name))))
 
 (def-process-module gazebo-perception-process-module (input)
   (assert (typep input 'action-designator))
@@ -109,4 +111,5 @@ given, all known objects from the knowledge base are returned."
     (ros-info (gazebo perception-process-module)
               "Searching for object ~a" object-designator)
     (cram-task-knowledge:filter-perceived-objects
+     object-designator
      (find-with-designator object-designator))))
