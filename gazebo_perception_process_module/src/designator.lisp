@@ -33,17 +33,6 @@
     (when found-objects
       (object-pose (first found-objects)))))
 
-;; NOTE(winkler): When objects are referred to by their type rather
-;; than their name, multiple instances can show up in the
-;; results. When requested to look at these objects (i.e. a location
-;; to look at this object group), the pose of the first object (if
-;; any) is returned. This results in the robot always looking towards
-;; the first object that is returned by perception.
-(defun designator-model-pose-from-type (type)
-  (let ((found-objects (find-object :object-type type)))
-    (when found-objects
-      (object-pose (first found-objects)))))
-
 (def-fact-group process-module (matching-process-module available-process-module)
 
   (<- (matching-process-module ?designator gazebo-perception-process-module)
@@ -67,11 +56,4 @@
     (obj-desig? ?object)
     (desig-prop ?object (name ?name))
     (lisp-fun designator-model-pose ?name ?solution)
-    (lisp-pred identity ?solution))
-
-  (<- (desig-solution ?designator ?solution)
-    (desig-prop ?designator (of ?object))
-    (obj-desig? ?object)
-    (desig-prop ?object (type ?type))
-    (lisp-fun designator-model-pose-from-type ?type ?solution)
     (lisp-pred identity ?solution)))
