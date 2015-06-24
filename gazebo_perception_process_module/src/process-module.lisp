@@ -44,8 +44,7 @@ properties of `perceived-object'.")
                           'location
                           `((pose ,(object-pose perceived-object)))))
           (object-name (or (when (desig-prop-value old-desig 'desig-props:name)
-                             (intern (string-upcase (desig-prop-value
-                                                     old-desig 'desig-props:name))))
+                             (desig-prop-value old-desig 'desig-props:name))
                            (object-identifier perceived-object))))
       `((desig-props:at ,obj-loc-desig)
         (desig-props:name ,object-name)
@@ -75,7 +74,7 @@ type `object-type', depending what is given. An invalid combination of
 both parameters will result in an empty list. When no parameters are
 given, all known objects from the knowledge base are returned."
   (cond (object-name
-         (let* ((obj-symbol (intern (string-upcase object-name)))
+         (let* ((obj-symbol object-name)
                 (model-pose (cram-gazebo-utilities:get-model-pose
                              object-name)))
            (when model-pose
