@@ -68,7 +68,7 @@ purposes."
                                     (type handle))))))
           handles))
 
-(defun find-object (&key object-name)
+(defun find-object (&key object-name object-type)
   "Finds objects based on either their name `object-name' or their
 type `object-type', depending what is given. An invalid combination of
 both parameters will result in an empty list. When no parameters are
@@ -81,6 +81,14 @@ given, all known objects from the knowledge base are returned."
              (list (make-instance 'gazebo-designator-shape-data
                                   :object-identifier obj-symbol
                                   :pose model-pose)))))
+        (object-type
+         (loop for model-data in (cram-gazebo-utilities:get-models)
+               as name = (car model-data)
+               when (string= object-type (subseq name 0 (length object-type)))
+                 collect
+                 (make-instance 'gazebo-designator-shape-data
+                                :object-identifier name
+                                :pose (cdr model-data))))
         (t
          (mapcar (lambda (model-data)
                    (destructuring-bind (model-name . model-pose)
@@ -98,11 +106,12 @@ given, all known objects from the knowledge base are returned."
    :data-object perceived-object))
 
 (defun find-with-designator (designator)
-  (with-desig-props (name) designator
+  (with-desig-props (desig-props::name desig-props::type) designator
     (mapcar (lambda (perceived-object)
                 (perceived-object->designator
                  designator perceived-object))
-            (find-object :object-name name))))
+            (find-object :object-name desig-props::name
+                         :object-type desig-props::type))))
 
 (def-process-module gazebo-perception-process-module (input)
   (assert (typep input 'action-designator))
