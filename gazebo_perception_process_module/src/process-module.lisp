@@ -107,11 +107,34 @@ given, all known objects from the knowledge base are returned."
 
 (defun find-with-designator (designator)
   (with-desig-props (desig-props::name desig-props::type) designator
-    (mapcar (lambda (perceived-object)
-                (perceived-object->designator
-                 designator perceived-object))
-            (find-object :object-name desig-props::name
-                         :object-type desig-props::type))))
+    (let* ((at (desig-prop-value designator 'desig-props::at))
+           (filter-function
+             (cond (at (lambda (object-check)
+                         (let* ((sample (reference at))
+                                ;; This is a 2d comparison; put the z
+                                ;; coordinate from the sample into the
+                                ;; pose before validating. Otherwise,
+                                ;; gravity will mess up everything.
+                                (pose (desig-prop-value
+                                       (desig-prop-value
+                                        object-check
+                                        'desig-props::at)
+                                       'desig-props::pose))
+                                (pose-elevated
+                                  (tf:copy-pose
+                                   pose
+                                   :origin (tf:make-3d-vector (tf:x (tf:origin pose))
+                                                              (tf:y (tf:origin pose))
+                                                              (tf:z (tf:origin sample))))))
+                           (not (validate-location-designator-solution at pose-elevated)))))
+                   (t #'not))))
+      (remove-if
+       filter-function
+       (mapcar (lambda (perceived-object)
+                 (perceived-object->designator
+                  designator perceived-object))
+               (find-object :object-name desig-props::name
+                            :object-type desig-props::type))))))
 
 (def-process-module gazebo-perception-process-module (input)
   (assert (typep input 'action-designator))
