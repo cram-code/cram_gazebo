@@ -84,7 +84,8 @@ given, all known objects from the knowledge base are returned."
         (object-type
          (loop for model-data in (cram-gazebo-utilities:get-models)
                as name = (car model-data)
-               when (string= object-type (subseq name 0 (length object-type)))
+               when (and (>= (length name) (length object-type))
+                         (string= object-type (subseq name 0 (length object-type))))
                  collect
                  (make-instance 'gazebo-designator-shape-data
                                 :object-identifier name
@@ -108,25 +109,27 @@ given, all known objects from the knowledge base are returned."
 (defun find-with-designator (designator)
   (with-desig-props (desig-props::name desig-props::type) designator
     (let* ((at (desig-prop-value designator 'desig-props::at))
+           (pose-in-at (desig-prop-value at 'desig-props::pose))
            (filter-function
-             (cond (at (lambda (object-check)
-                         (let* ((sample (reference at))
-                                ;; This is a 2d comparison; put the z
-                                ;; coordinate from the sample into the
-                                ;; pose before validating. Otherwise,
-                                ;; gravity will mess up everything.
-                                (pose (desig-prop-value
-                                       (desig-prop-value
-                                        object-check
-                                        'desig-props::at)
-                                       'desig-props::pose))
-                                (pose-elevated
-                                  (tf:copy-pose
-                                   pose
-                                   :origin (tf:make-3d-vector (tf:x (tf:origin pose))
-                                                              (tf:y (tf:origin pose))
-                                                              (tf:z (tf:origin sample))))))
-                           (not (validate-location-designator-solution at pose-elevated)))))
+             (cond ((and at (not pose-in-at))
+                    (lambda (object-check)
+                      (let* ((sample (reference at))
+                             ;; This is a 2d comparison; put the z
+                             ;; coordinate from the sample into the
+                             ;; pose before validating. Otherwise,
+                             ;; gravity will mess up everything.
+                             (pose (desig-prop-value
+                                    (desig-prop-value
+                                     object-check
+                                     'desig-props::at)
+                                    'desig-props::pose))
+                             (pose-elevated
+                               (tf:copy-pose
+                                pose
+                                :origin (tf:make-3d-vector (tf:x (tf:origin pose))
+                                                           (tf:y (tf:origin pose))
+                                                           (tf:z (tf:origin sample))))))
+                        (not (validate-location-designator-solution at pose-elevated)))))
                    (t #'not))))
       (remove-if
        filter-function
