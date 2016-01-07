@@ -58,3 +58,20 @@
 
 (defun gazebo-present ()
   (roslisp:wait-for-service "gazebo/spawn_urdf_model" 0.25))
+
+(defun set-joint-effort (joint effort &key (duration 2.0))
+  (call-service "gazebo/apply_joint_effort"
+                'gazebo_msgs-srv:applyjointeffort
+                :joint_name joint
+                :effort effort
+                :start_time (roslisp:ros-time)
+                :duration duration))
+
+(defun set-joint-damping (joint damping)
+  (call-service "gazebo/set_joint_properties"
+                'gazebo_msgs-srv:setjointproperties
+                :joint_name joint
+                :ode_joint_config
+                (roslisp:make-message
+                 "gazebo_msgs/ODEJointProperties"
+                 :damping (vector damping))))
