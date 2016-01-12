@@ -75,3 +75,33 @@
                 (roslisp:make-message
                  "gazebo_msgs/ODEJointProperties"
                  :damping (vector damping))))
+
+(defun set-joint-position (model joint position &optional hold)
+  (call-service "gazebo/joint_control"
+                'attache_msgs-srv:jointcontrol
+                :model model
+                :joint joint
+                :position position
+                :hold_position hold))
+
+(defun get-joint-information (model joint)
+  (with-fields (success position min max)
+      (call-service "gazebo/joint_information"
+                    'attache_msgs-srv:jointinformation
+                    :model model
+                    :joint joint)
+    (values success position min max)))
+
+(defun open-joint (model joint &optional hold)
+  (multiple-value-bind (success position min max)
+      (get-joint-information model joint)
+    (declare (ignore position min))
+    (when success
+      (set-joint-position model joint max hold))))
+
+(defun close-joint (model joint &optional hold)
+  (multiple-value-bind (success position min max)
+      (get-joint-information model joint)
+    (declare (ignore position max))
+    (when success
+      (set-joint-position model joint min hold))))
