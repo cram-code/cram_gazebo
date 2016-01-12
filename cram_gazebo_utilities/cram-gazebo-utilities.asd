@@ -50,7 +50,7 @@
                gazebo_msgs-srv
                cl-semantic-map-utils
                cram-plan-library
-	       attache-msgs)
+	       attache_msgs-srv)
   :components
   ((:module "src"
     :components
