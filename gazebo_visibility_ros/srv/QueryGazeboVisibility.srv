@@ -1,0 +1,12 @@
+string name
+geometry_msgs/Point camera_pose
+geometry_msgs/Point camera_fwd
+geometry_msgs/Point camera_up
+float64 focal_distance
+float64 width
+float64 height
+float64 max_distance
+float64 threshold
+---
+int32 visible
+
