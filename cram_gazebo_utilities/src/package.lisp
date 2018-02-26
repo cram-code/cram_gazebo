@@ -27,24 +27,23 @@
 
 (in-package :cl-user)
 
-(desig-props:def-desig-package
- cram-gazebo-utilities
- (:documentation "CRAM gazebo utilities")
- (:nicknames :cram-gu)
- (:use
-  #:common-lisp
-  #:cram-roslisp-common
-  #:cram-reasoning
-  #:cram-process-modules
-  #:cram-plan-library
-  #:crs
-  #:cut
-  #:desig
-  #:designators-ros
-  #:roslisp
-  #:cram-plan-failures
-  #:semantic-map-cache)
+(desig-props:def-desig-package cram-gazebo-utilities
+  (:documentation "CRAM Gazebo Utilities")
+  (:nicknames :cram-gu)
+  (:use
+   #:common-lisp
+   #:cram-prolog
+   #:cram-process-modules
+   #:cram-plan-library
+   #:cut
+   #:desig
+   #:roslisp
+   #:cram-common-failures)
   (:export init-cram-gazebo-utilities
            get-model-pose set-model-state
            spawn-gazebo-model object-in-world?
-           get-models gazebo-present))
+           get-models gazebo-present
+           spawned-object-description
+           spawned-objects
+           delete-spawned-objects
+           model-present))

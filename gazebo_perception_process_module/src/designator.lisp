@@ -29,15 +29,15 @@
 (in-package :gazebo-perception-pm)
 
 (defun designator-model-pose (name)
-  (let ((found-objects (find-object :object-name name)))
+  (let ((found-objects (find-objects :object-name name)))
     (when found-objects
       (object-pose (first found-objects)))))
 
 (def-fact-group process-module (matching-process-module available-process-module)
 
   (<- (matching-process-module ?designator gazebo-perception-process-module)
-    (desig-prop ?designator (to perceive))
-    (desig-prop ?designator (obj ?object))
+    (desig-prop ?designator (:to :perceive))
+    (desig-prop ?designator (:obj ?object))
     (obj-desig? ?object))
 
   (<- (available-process-module gazebo-perception-process-module)
@@ -46,14 +46,14 @@
 (def-fact-group perception-action-designator (action-desig)
 
   (<- (action-desig ?desig ?object)
-    (desig-prop ?desig (to perceive))
-    (desig-prop ?desig (obj ?object))))
+    (desig-prop ?desig (:to :perceive))
+    (desig-prop ?desig (:obj ?object))))
 
 (def-fact-group gazebo-object-locations (desig-solution)
 
   (<- (desig-solution ?designator ?solution)
-    (desig-prop ?designator (of ?object))
+    (desig-prop ?designator (:of ?object))
     (obj-desig? ?object)
-    (desig-prop ?object (name ?name))
+    (desig-prop ?object (:name ?name))
     (lisp-fun designator-model-pose ?name ?solution)
     (lisp-pred identity ?solution)))

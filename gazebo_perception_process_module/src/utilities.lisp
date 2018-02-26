@@ -28,6 +28,8 @@
 
 (in-package :gazebo-perception-pm)
 
+(defvar *ignored-objects* nil)
+
 (defun object-names-equal (name-1 name-2)
   "In designators, we want to support symbols as names, too. It first
   converts all names that are symbols to strings and then compares
@@ -39,3 +41,12 @@
                   (symbol (symbol-name name-2))
                   (string name-2))))
     (string-equal name-1 name-2)))
+
+(defun ignore-object (name &optional (ignore t))
+  (if ignore
+      (unless (is-object-ignored name)
+        (push name *ignored-objects*))
+      (setf *ignored-objects* (remove name *ignored-objects* :test #'string=))))
+
+(defun is-object-ignored (name)
+  (not (not (find name *ignored-objects* :test #'string=))))

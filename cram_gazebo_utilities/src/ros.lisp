@@ -53,9 +53,9 @@ about the current state of all models in the simulated world."
         msg
       (map 'nil (lambda (model-name model-pose-msg)
                   (setf (gethash model-name *known-models*)
-                        (tf:pose->pose-stamped
+                        (cl-transforms-stamped:pose->pose-stamped
                          "map" 0.0
-                         (tf:msg->pose model-pose-msg))))
+                         (cl-transforms-stamped:from-msg model-pose-msg))))
            names poses))))
 
 (defun get-model-pose (name)
