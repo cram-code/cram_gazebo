@@ -2,20 +2,22 @@
   <name>cram_gazebo</name>
   <version>1.0.0</version>
   <description>
-    
     Metapackage holding the Gazebo interface for CRAM.
-    
   </description>
-  
+
   <maintainer email="winkler@cs.uni-bremen.de">Jan Winkler</maintainer>
   <author email="winkler@cs.uni-bremen.de">Jan Winkler</author>
-  
+
   <license>BSD</license>
-  
+
   <url>http://ros.org/wiki/cram_gazebo</url>
 
   <buildtool_depend>catkin</buildtool_depend>
 
   <run_depend>cram_gazebo_utilities</run_depend>
   <run_depend>gazebo_perception_process_module</run_depend>
+
+  <export>
+    <metapackage/>
+  </export>
 </package>

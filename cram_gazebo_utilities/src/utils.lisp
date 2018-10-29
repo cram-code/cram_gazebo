@@ -9,9 +9,6 @@
 ;;;     * Redistributions in binary form must reproduce the above copyright
 ;;;       notice, this list of conditions and the following disclaimer in the
 ;;;       documentation and/or other materials provided with the distribution.
-;;;     * Neither the name of Willow Garage, Inc. nor the names of its
-;;;       contributors may be used to endorse or promote products derived from
-;;;       this software without specific prior written permission.
 ;;; 
 ;;; THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 ;;; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -27,26 +24,93 @@
 
 (in-package :cram-gazebo-utilities)
 
+
+;;;
+;;; Class definitions
+;;;
+
+(defclass spawned-object ()
+  ((id :reader id :initarg :id)
+   (description :reader description :initarg :description)))
+
+
+;;;
+;;; Global variables
+;;;
+
+(defvar *spawned-objects* (make-hash-table :test 'equal))
+
+
+;;;
+;;; Functions: Spawned object knowledge
+;;;
+
+(defun clear-spawned-object-knowledge ()
+  (setf *spawned-objects* (make-hash-table :test 'equal)))
+
+(defun register-spawned-object (object-id description)
+  (setf (gethash object-id *spawned-objects*)
+        (make-instance 'spawned-object
+                       :id object-id :description description)))
+
+(defun unregister-spawned-object (object-id)
+  (remhash object-id *spawned-objects*))
+
+(defun spawned-object-description (object-id)
+  (let ((spawned-object (gethash object-id *spawned-objects*)))
+    (when spawned-object
+      (description spawned-object))))
+
+(defun spawned-objects ()
+  (loop for name being the hash-keys of *spawned-objects*
+        collect name))
+
+(defun delete-spawned-objects ()
+  (dolist (object-id (spawned-objects))
+    (delete-gazebo-model object-id))
+  (clear-spawned-object-knowledge))
+
+
+;;;
+;;; Functions: Model state, spawning, deleting
+;;;
+
 (defun set-model-state (model-name new-pose)
   (call-service "gazebo/set_model_state"
                 'gazebo_msgs-srv:setmodelstate
-                :model_state (make-msg "gazebo_msgs/ModelState"
-                                       :model_name model-name
-                                       :pose (tf:pose->msg new-pose)
-                                       :reference_frame (tf:frame-id new-pose))))
+                :model_state
+                (make-msg "gazebo_msgs/ModelState"
+                          :model_name model-name
+                          :pose (cl-transforms-stamped:to-msg new-pose)
+                          :reference_frame (cl-transforms-stamped:frame-id new-pose))))
 
-(defun spawn-gazebo-model (name pose urdf-file)
+(defun spawn-gazebo-model (name pose urdf-file &key description)
   (call-service "gazebo/spawn_urdf_model"
                 'gazebo_msgs-srv:spawnmodel
                 :model_name name
                 :model_xml (file-string urdf-file)
-                :initial_pose (tf:pose->msg pose)
-                :reference_frame (tf:frame-id pose)))
+                :initial_pose (cl-transforms-stamped:to-msg
+                               (cl-tf:pose-stamped->pose pose))
+                :reference_frame (cl-transforms-stamped:frame-id pose))
+  (register-spawned-object name description))
 
 (defun delete-gazebo-model (name)
   (call-service "gazebo/delete_model"
                 'gazebo_msgs-srv:deletemodel
-                :model_name name))
+                :model_name name)
+  (unregister-spawned-object name))
+
+(defun model-present (name)
+  (with-fields (success)
+      (call-service "gazebo/get_model_state"
+                    'gazebo_msgs-srv:getmodelstate
+                    :model_name name
+                    :relative_entity_name "")
+    success))
+
+;;;
+;;; Functions: Utility
+;;;
 
 (defun file-string (path)
   (with-open-file (s path)
@@ -58,6 +122,11 @@
 
 (defun gazebo-present ()
   (roslisp:wait-for-service "gazebo/spawn_urdf_model" 0.25))
+
+
+;;;
+;;; Functions: Joint manipulation
+;;;
 
 (defun set-joint-effort (joint effort &key (duration 2.0))
   (call-service "gazebo/apply_joint_effort"
@@ -76,21 +145,22 @@
                  "gazebo_msgs/ODEJointProperties"
                  :damping (vector damping))))
 
-(defun set-joint-position (model joint position &optional hold)
-  (call-service "gazebo/joint_control"
-                'attache_msgs-srv:jointcontrol
-                :model model
-                :joint joint
-                :position position
-                :hold_position hold))
+;;Not sure if this is needed
+;;(defun set-joint-position (model joint position &optional hold)
+;;  (call-service "gazebo/joint_control"
+;;                'attache_msgs-srv:JointControl
+;;                :model model
+;;                :joint joint
+;;                :position position
+;;                :hold_position hold))
 
-(defun get-joint-information (model joint)
-  (with-fields (success position min max)
-      (call-service "gazebo/joint_information"
-                    'attache_msgs-srv:jointinformation
-                    :model model
-                    :joint joint)
-    (values success position min max)))
+;;(defun get-joint-information (model joint)
+;;  (with-fields (success position min max)
+;;      (call-service "gazebo/joint_information"
+;;                    'attache_msgs-srv:jointinformation
+;;                    :model model
+;;                    :joint joint)
+;;    (values success position min max)))
 
 (defun open-joint (model joint &optional hold)
   (multiple-value-bind (success position min max)

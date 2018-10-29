@@ -30,15 +30,14 @@
   (:nicknames :gazebo-perception-pm)
   (:use
    #:common-lisp
-   #:cram-roslisp-common
-   #:cram-reasoning
+   #:cram-prolog
    #:cram-process-modules
    #:cram-designators
    #:cut
-   #:designators-ros
    #:roslisp
-   #:cram-plan-failures)
-  (:export #:gazebo-perception-process-module)
+   #:cram-common-failures)
+  (:export #:gazebo-perception-process-module
+           ignore-object)
   (:shadowing-import-from #:cpl fail)
   (:import-from #:cram-process-modules
                 matching-process-module available-process-module)

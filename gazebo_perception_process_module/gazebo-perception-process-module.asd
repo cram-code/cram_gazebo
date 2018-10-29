@@ -31,29 +31,27 @@
   :license "BSD"
   :description "Gazebo perception process module"
 
-  :depends-on (cram-roslisp-common
+  :depends-on (roslisp-utilities
                cram-language
-               cram-reasoning
-               process-modules
+               cram-prolog
+               cram-process-modules
                cram-utilities
-               cram-plan-knowledge
-               designators
-               designators-ros
-               cram-plan-failures
+               cram-designators
+               cram-common-failures
                cram-projection
-               cram-manipulation-knowledge
-               physics-utils
+               cram-physics-utils
                cl-urdf
-               bullet-reasoning
-               cram-task-knowledge
-               cram-gazebo-utilities)
+               cram-gazebo-utilities
+               gazebo_visibility_ros-srv)
   :components
   ((:module "src"
     :components
     ((:file "package")
      (:file "designator" :depends-on ("package"))
+     (:file "utilities" :depends-on ("package"))
      (:file "gazebo-designator-data" :depends-on ("package"))
      (:file "process-module"
       :depends-on ("package"
                    "designator"
-                   "gazebo-designator-data"))))))
+                   "gazebo-designator-data"
+                   "utilities"))))))
